@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Lexend:wght@100..900&display=swap');
+
+:root {
+        --purple: #876582;
+        --dark: #080330;
+        --white: #F7F7F7;
+        --stroke: #000000;
+        --orange: #FF6600;
+        --radius: 3rem;
+        --border: 3px solid #080330;
+        --main-width: 77.5rem;
+        --black: #080330;
+        --light: #fff;  
+        --white: #f7f7f7;
+        --primary: #8FD14F;
+        --secondary: #604cc3;
+    /* --secondary: #c2c1c9; */
+    --accent: #FF6600;
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+    font-family: 'Lexend';
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: 'Exo 2';
+    font-weight: 700;
+}
+
+p {
+    font-size: 12px;
+}
+a{
+    font-size: 12px;
+}
+html {
+    font-size: 100%;
+}
+
+/* 16px */
+
+h1 {
+    font-size: 3.053rem;
+    /* 48.8px */
+}
+
+h2 {
+    font-size: 2.442rem;
+    /* 39.04px */
+}
+
+h3 {
+    font-size: 1.954rem;
+    /* 31.2px */
+}
+
+h4 {
+    font-size: 1.563rem;
+    /* 24.96px */
+}
+
+h5 {
+    font-size: 1.250rem;
+    /* 20px */
+}
+
+small {
+    font-size: 0.800rem;
+    /* 12.8px*/
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+  .dashboard-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      gap: 2%;
+  }
+  .button-z{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    background: var(--secondary);
+    border: 1px solid var(--black);
+    border-radius: 10px;
+    width: 200px;
+    height: 37px;
+    font-family: 'Exo 2';
+    font-style: normal;
+    /* font-weight: 700;
+    font-size: 20px; */
+    line-height: 24px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  .button-z:hover{
+    box-shadow: 3px 5px 0px var(--black);
+    transform: translate(-5px, -5px);
+  }
+  @media (max-width: 768px) {
+    h1{
+        font-size: 1.553rem;
+    }
+  }
