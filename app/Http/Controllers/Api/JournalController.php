@@ -128,10 +128,10 @@ class JournalController extends Controller
         ]);
     }
 
-    public function stats()
+    public function stats(Request $request)
     {
-        $month = 12; // Desember
-        $year = now()->year;
+        $month = (int) $request->query('month', now()->month);
+        $year = (int) $request->query('year', now()->year);
 
         $journaledDays = Journal::where('user_id', Auth::id())
             ->whereMonth('updated_at', $month)

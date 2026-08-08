@@ -35,7 +35,7 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => $userRoleId ?? 2
+            'role_id' => $userRoleId ?? 3
         ]);
 
         // --- LOGIKA BARU: KIRIM KODE VERIFIKASI ---

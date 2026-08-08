@@ -49,6 +49,21 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->belongsTo(Role::class);
     }
 
+    public function isAdmin(): bool
+    {
+        return in_array($this->role->name ?? '', ['admin', 'super_admin']);
+    }
+
+    public function isCounselor(): bool
+    {
+        return ($this->role->name ?? '') === 'konselor';
+    }
+
+    public function isUser(): bool
+    {
+        return ($this->role->name ?? '') === 'user';
+    }
+
     public function proposals()
     {
         return $this->hasMany(Proposal::class);

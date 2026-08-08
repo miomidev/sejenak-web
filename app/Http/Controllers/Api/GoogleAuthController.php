@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use App\Models\UserSession;
 use App\Models\Post;
 use App\Models\Journal;
@@ -44,6 +45,8 @@ class GoogleAuthController extends Controller
                         ->first();
 
             if (!$user) {
+                $userRoleId = Role::where('name', 'user')->value('id') ?? 3;
+
                 $user = User::create([
                     'name' => $name,
                     'email' => $email,
@@ -51,7 +54,7 @@ class GoogleAuthController extends Controller
                     'google_id' => $googleId,
                     'avatar' => $avatar,
                     'password' => Hash::make(Str::random(16)),
-                    'role_id' => 1,
+                    'role_id' => $userRoleId,
                     'email_verified_at' => now(),
                 ]);
             } else {

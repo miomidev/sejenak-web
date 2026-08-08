@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationCodeMail;
@@ -29,12 +30,14 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 
+        $userRoleId = Role::where('name', 'user')->value('id') ?? 3;
+
         $user = User::create([
             'name' => $input['name'],
             'username' => $input['username'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'role_id' => 1,
+            'role_id' => $userRoleId,
         ]);
 
         // --- LOGIKA BARU: KIRIM KODE VERIFIKASI ---

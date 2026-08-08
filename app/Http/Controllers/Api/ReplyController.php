@@ -13,7 +13,7 @@ class ReplyController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role_id === 1) {
+        if ($user->isAdmin()) {
             $replies = Reply::with(['comment.post', 'user'])->latest()->paginate(15);
         } else {
             $replies = Reply::with(['comment.post', 'user'])
@@ -50,7 +50,7 @@ class ReplyController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role_id !== 1 && $reply->user_id !== $user->id) {
+        if (!$user->isAdmin() && $reply->user_id !== $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized'
@@ -67,7 +67,7 @@ class ReplyController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role_id !== 1 && $reply->user_id !== $user->id) {
+        if (!$user->isAdmin() && $reply->user_id !== $user->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -88,7 +88,7 @@ class ReplyController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role_id !== 1 && $reply->user_id !== $user->id) {
+        if (!$user->isAdmin() && $reply->user_id !== $user->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 

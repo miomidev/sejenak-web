@@ -85,20 +85,34 @@ $validated['user_id'] = Auth::id();
         return view('posts.show', compact('post'));
     }
 
-    public function edit(Post $post)
+    public function edit($id)
     {
+        $post = $id instanceof Post ? $id : Post::findOrFail($id);
+
+        if ($post->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $users = User::all();
         return view('posts.edit', compact('post', 'users'));
     }
 
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
+        $post = $id instanceof Post ? $id : Post::findOrFail($id);
+
+        if ($post->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'title' => 'sometimes|string|max:255',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_anonymous' => 'boolean',
         ]);
+
+        $validated['is_anonymous'] = $request->has('is_anonymous') ? true : false;
 
         if ($request->hasFile('image')) {
             if ($post->image) {
@@ -108,11 +122,17 @@ $validated['user_id'] = Auth::id();
         }
 
         $post->update($validated);
-        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->route('user.comunity')->with('success', 'Post updated successfully.');
     }
 
-    public function destroy(Post $post)
+    public function destroy($id)
     {
+        $post = $id instanceof Post ? $id : Post::findOrFail($id);
+
+        if ($post->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         if ($post->image) {
             Storage::disk('public')->delete($post->image);
         }

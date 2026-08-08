@@ -110,20 +110,20 @@ public function store(Request $request)
     ], 200);
     }
 
-    public function user()
+    public function user(Request $request)
     {
-        $month = 12; // Desember
-    $year = now()->year;
+        $month = (int) $request->query('month', now()->month);
+        $year = (int) $request->query('year', now()->year);
 
-    // Ambil semua jurnal bulan Desember milik user
-    $journaledDays = Journal::where('user_id', Auth::id())
-        ->whereMonth('updated_at', $month)
-        ->whereYear('updated_at', $year)
-        ->pluck('updated_at')
-        ->map(function ($date) {
-            return $date->day;
-        })
-        ->toArray();
+        // Ambil semua jurnal bulan ini milik user
+        $journaledDays = Journal::where('user_id', Auth::id())
+            ->whereMonth('updated_at', $month)
+            ->whereYear('updated_at', $year)
+            ->pluck('updated_at')
+            ->map(function ($date) {
+                return $date->day;
+            })
+            ->toArray();
         $user = Auth::user();
         $journals = $user->journals()->orderBy('created_at', 'desc')->paginate(10);
         $lastJournal = $journals->first();

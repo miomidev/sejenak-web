@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             MoodsTableSeeder::class,
             AudiosTableSeeder::class,
             DailyChallengesSeeder::class,
+            BlogCategorySeeder::class,
         ]);
 
     }

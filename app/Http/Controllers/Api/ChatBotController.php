@@ -18,7 +18,10 @@ class ChatBotController extends Controller
         }
 
         try {
-            $apiKey = env('GEMINI_API_KEY', 'AIzaSyB_7Uj-0FLFYq1YiE0RL0Jxy8G5vLR_6NU');
+            $apiKey = config('services.gemini.key') ?? env('GEMINI_API_KEY');
+            if (!$apiKey) {
+                return response()->json(['error' => 'API Key Gemini belum dikonfigurasi di environment server.'], 500);
+            }
             $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=$apiKey";
 
             // Informasi waktu lokal Indonesia (WIB)

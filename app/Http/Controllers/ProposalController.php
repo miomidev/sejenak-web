@@ -17,7 +17,7 @@ class ProposalController extends Controller
 
     public function create()
     {
-        $users = User::where('role_id', 2)->get(); // Only counselors can submit proposals
+        $users = User::whereHas('role', fn($q) => $q->where('name', 'konselor'))->get(); // Only counselors can submit proposals
         return view('proposals.create', compact('users'));
     }
 
@@ -46,7 +46,7 @@ class ProposalController extends Controller
 
     public function edit(Proposal $proposal)
     {
-        $users = User::where('role_id', 2)->get();
+        $users = User::whereHas('role', fn($q) => $q->where('name', 'konselor'))->get();
         return view('proposals.edit', compact('proposal', 'users'));
     }
 

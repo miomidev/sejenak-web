@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\Http;
+use Illuminate\Support\Facades\Http;
 
 class MessagesController extends Controller
 {
@@ -19,9 +19,9 @@ class MessagesController extends Controller
         return view('messages.chat');
     }
 
-    public function proxyToGemini()
+    public function proxyToGemini(Request $request)
     {
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key') ?? env('GEMINI_API_KEY');
 
         if (!$apiKey) {
             Log::error('GEMINI_API_KEY not set in .env file.');

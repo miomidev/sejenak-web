@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -62,6 +63,8 @@ class GoogleAuthController extends Controller
             }
 
             // 3. Jika user benar-benar baru, buat akun baru dengan avatarnya
+            $userRoleId = Role::where('name', 'user')->value('id') ?? 3;
+
             $newUser = User::create([
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
@@ -69,7 +72,7 @@ class GoogleAuthController extends Controller
                 'google_id' => $googleUser->id,
                 'avatar' => $avatarUrl,
                 'password' => Hash::make(uniqid()),
-                'role_id' => 1,
+                'role_id' => $userRoleId,
             ]);
             
             // Tandai email sebagai terverifikasi karena berasal dari Google

@@ -16,8 +16,8 @@ class SessionController extends Controller
 
     public function create()
     {
-        $users = User::where('role_id', 1)->get(); // Regular users
-        $counselors = User::where('role_id', 2)->get(); // Counselors
+        $users = User::whereHas('role', fn($q) => $q->where('name', 'user'))->get();
+        $counselors = User::whereHas('role', fn($q) => $q->where('name', 'konselor'))->get();
         return view('sessions.create', compact('users', 'counselors'));
     }
 
@@ -41,8 +41,8 @@ class SessionController extends Controller
 
     public function edit(Session $session)
     {
-        $users = User::where('role_id', 1)->get();
-        $counselors = User::where('role_id', 2)->get();
+        $users = User::whereHas('role', fn($q) => $q->where('name', 'user'))->get();
+        $counselors = User::whereHas('role', fn($q) => $q->where('name', 'konselor'))->get();
         return view('sessions.edit', compact('session', 'users', 'counselors'));
     }
 

@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\HumanCapacityController;
 use App\Http\Controllers\Api\RecommendationController;
 use App\Http\Controllers\Api\SmartNotificationController;
 use App\Http\Controllers\Api\AiChatV2Controller;
+use App\Http\Controllers\Api\UserDailyChallengeController;
 
 
 
@@ -41,7 +42,9 @@ Route::post('/resend-verification', [AuthController::class, 'resendVerification'
 
 Route::post('/midtrans/callback', [TransactionController::class, 'callback']);
 Route::middleware('auth:api')->group(function () {
-    Route::get('profile', [AuthController::class, 'profile']);
+    Route::get('profile', [ProfileController::class, 'show']);
+    Route::get('me', [AuthController::class, 'profile']);
+    Route::post('/profile/update', [ProfileController::class, 'update']);
     Route::prefix('audios')->group(function () {
         Route::get('/', [AudioController::class, 'index']);
         Route::post('/', [AudioController::class, 'store']);
@@ -56,20 +59,21 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [JournalController::class, 'store']);
         Route::put('/{id}', [JournalController::class, 'update']); // PUT method
         Route::patch('/{id}', [JournalController::class, 'update']);
-        Route::get('/{id}', [JournalController::class, 'show']);
-        Route::delete('/{id}', [JournalController::class, 'destroy']);
         Route::get('/search', [JournalController::class, 'search']);
         Route::get('/stats', [JournalController::class, 'stats']);
+        Route::get('/{id}', [JournalController::class, 'show']);
+        Route::delete('/{id}', [JournalController::class, 'destroy']);
     });
     Route::prefix('moods')->group(function () {
         Route::get('/', [MoodController::class, 'index']);
         Route::post('/', [MoodController::class, 'store']);
+        Route::get('/statistics', [MoodController::class, 'statistics']);
         Route::get('/{id}', [MoodController::class, 'show']);
         Route::delete('/{id}', [MoodController::class, 'destroy']);
-        Route::get('/statistics', [MoodController::class, 'statistics']);
     });
     Route::prefix('comunity')->group(function () {
         Route::get('/', [ComunityController::class, 'index']);
+        Route::get('/getPost', [PostController::class, 'index']);
         Route::prefix('likes')->group(function () {
             Route::get('/', [LikeController::class, 'index']);
             Route::post('/', [LikeController::class, 'store']);
@@ -77,29 +81,19 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/toggle', [LikeController::class, 'toggleLike']);
         });
         
-        // Route::prefix('posts')->group(function () {
-        //     Route::get('/', [PostController::class, 'index']);
-        //     Route::post('/', [PostController::class, 'store']);
-        //     Route::get('/{id}', [PostController::class, 'show']);
-        //     Route::put('/{id}', [PostController::class, 'update']);
-        //     Route::delete('/{id}', [PostController::class, 'destroy']);
-        // });
         Route::prefix('posts')->group(function () {
             Route::get('/my-posts', [PostController::class, 'getAllMyPost']);
             Route::get('/', [PostController::class, 'index']);
             Route::post('/', [PostController::class, 'store']);
+            Route::get('/{id}', [PostController::class, 'show']);
             Route::put('/{id}', [PostController::class, 'update']);
             Route::delete('/{id}', [PostController::class, 'destroy']);
-            Route::get('/{id}', [PostController::class, 'show']);
-            });
+        });
         Route::prefix('comments')->group(function () {
             Route::get('/', [CommentController::class, 'index']);
             Route::post('/', [CommentController::class, 'store']);
-            Route::get('/{comment}', [CommentController::class, 'show']);
-            Route::get('/post/{postId}', [CommentController::class, 'getByPost']);          
-            Route::put('/{comment}', [CommentController::class, 'update']);
-            Route::get('/{comment}', [CommentController::class, 'getByPost']);
             Route::get('/post/{postId}', [CommentController::class, 'getByPost']);
+            Route::get('/{comment}', [CommentController::class, 'show']);
             Route::put('/{comment}', [CommentController::class, 'update']);
             Route::delete('/{comment}', [CommentController::class, 'destroy']);
         });
@@ -132,8 +126,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/meditation/daily', [MeditationController::class, 'daily']);
     Route::get('/meditation/audios', [MeditationController::class, 'audios']);
-    Route::get('/profile', [ProfileController::class, 'show']);
-    Route::post('/profile/update', [ProfileController::class, 'update']);
 
     // ============================================
     // V2 Routes - Human Capacity AI Engine (FastAPI)
