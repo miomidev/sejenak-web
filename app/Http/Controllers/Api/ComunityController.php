@@ -5,25 +5,46 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class ComunityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // ambil postingan komunitas
-        $posts = Post::with([
+        $query = Post::with([
             'user',
             'likes',
             'comments.user',
             'comments.likes',
             'comments.replies.user'
-        ])
-        ->notBanned()
-        ->latest()
-        ->take(100)
-        ->get();
+        ])->notBanned();
 
-        // hitung top users
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                  ->orWhere('title', 'like', "%{$search}%");
+            });
+        }
+
+        // User filter
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Sort filter
+        $sort = $request->get('sort', 'latest');
+        if ($sort === 'popular') {
+            $query->withCount('likes as likes_count')
+                  ->withCount('comments as comments_count')
+                  ->orderByRaw('(likes_count + comments_count) DESC');
+        } else {
+            $query->latest();
+        }
+
+        $posts = $query->take(100)->get();
+
         $topUsers = User::withCount([
             'journals',
             'posts',
@@ -46,8 +67,7 @@ class ComunityController extends Controller
                 ($user->comments_count * 1) +
                 ($user->likes_count * 1) +
                 ($user->post_likes_count * 2) +
-                ($user->comment_likes_count * 2) +
-                ($user->reply_likes_count ?? 0 * 2);
+                ($user->comment_likes_count * 2);
 
             return $user;
         })

@@ -117,6 +117,30 @@ class ExerciseController extends Controller
     }
     public function user()
     {
-return view('exercises.user');
+        $exercises = Exercise::orderBy('created_at', 'desc')->get();
+        return view('exercises.user', compact('exercises'));
+    }
+
+    public function showJson(Exercise $exercise)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $exercise
+        ]);
+    }
+
+    public function completeExerciseJson(Exercise $exercise)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $exercise->users()->syncWithoutDetaching([
+                $user->id => ['status' => 'completed']
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Latihan berhasil diselesaikan!'
+        ]);
     }
 }

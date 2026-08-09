@@ -12,12 +12,18 @@ class Exercise extends Model
     protected $fillable = [
         'title',
         'type',
+        'content_type',
         'description',
-        'media_path'
+        'content',
+        'video_url',
+        'media_path',
+        'author_name',
+        'duration_minutes'
     ];
 
     protected $casts = [
-        'type' => 'string'
+        'type' => 'string',
+        'content_type' => 'string'
     ];
 
     public function users()

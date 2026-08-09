@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\RecommendationController;
 use App\Http\Controllers\Api\SmartNotificationController;
 use App\Http\Controllers\Api\AiChatV2Controller;
 use App\Http\Controllers\Api\UserDailyChallengeController;
+use App\Http\Controllers\Api\DailyTaskController;
 
 
 
@@ -120,6 +121,14 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/choose', [UserDailyChallengeController::class, 'chooseChallenge']);
         Route::put('/{id}/complete', [UserDailyChallengeController::class, 'completeChallenge']);
         Route::get('/my', [UserDailyChallengeController::class, 'myChallenges']);
+    });
+
+    Route::prefix('daily-tasks')->group(function () {
+        Route::get('/', [DailyTaskController::class, 'index']);
+        Route::post('/generate', [DailyTaskController::class, 'generate']);
+        Route::get('/stats', [DailyTaskController::class, 'stats']);
+        Route::get('/templates', [DailyTaskController::class, 'templates']);
+        Route::put('/{id}/complete', [DailyTaskController::class, 'complete']);
     });
     Route::post('/chat-bot', [ChatBotController::class, 'chat']);
 

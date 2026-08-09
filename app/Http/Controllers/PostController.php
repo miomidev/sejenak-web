@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,10 +27,30 @@ class PostController extends Controller
         ]);
     }
 
-    // Balikin JSON biar bisa diparse di fetch
     return response()->json([
         'likes_count' => $post->likes()->count(),
-        'liked' => !$like // true kalau baru like, false kalau unlike
+        'liked' => !$like
+    ]);
+}
+
+public function toggleCommentLike(Comment $comment)
+{
+    $like = Like::where('user_id', Auth::id())
+                ->where('comment_id', $comment->id)
+                ->first();
+
+    if ($like) {
+        $like->delete();
+    } else {
+        Like::create([
+            'user_id' => Auth::id(),
+            'comment_id' => $comment->id,
+        ]);
+    }
+
+    return response()->json([
+        'likes_count' => $comment->likes()->count(),
+        'liked' => !$like
     ]);
 }
 

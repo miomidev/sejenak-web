@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -59,19 +60,48 @@ class CommentController extends Controller
 
     public function update(Request $request, Comment $comment)
     {
-        $validated = $request->validate([
-            'post_id' => 'required|exists:posts,id',
-            'user_id' => 'required|exists:users,id',
-            'content' => 'required|string',
+        if ($comment->user_id !== Auth::id()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+            abort(403, 'Anda tidak memiliki izin untuk mengubah komentar ini.');
+        }
+
+        $request->validate([
+            'content' => 'required|string|max:1000',
         ]);
 
-        $comment->update($validated);
-        return redirect()->route('comments.index')->with('success', 'Comment updated successfully.');
+        $comment->update(['content' => $request->content]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'comment' => $comment,
+                'message' => 'Komentar berhasil diperbarui.'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Komentar berhasil diperbarui.');
     }
 
-    public function destroy(Comment $comment)
+    public function destroy(Request $request, Comment $comment)
     {
+        if ($comment->user_id !== Auth::id()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+            abort(403, 'Anda tidak memiliki izin untuk menghapus komentar ini.');
+        }
+
         $comment->delete();
-        return redirect()->route('comments.index')->with('success', 'Comment deleted successfully.');
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Komentar berhasil dihapus.'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
     }
 }

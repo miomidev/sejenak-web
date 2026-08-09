@@ -1,756 +1,245 @@
 @extends('layouts.app')
 
-@section('title', 'Exercise untuk Meringankan Stress')
+@section('title', 'Exercise & Latihan Meringankan Stres')
+
+@section('style')
+<style>
+    .exercise-card {
+        @apply bg-white border-2 border-dark rounded-playful-lg p-6 shadow-border-offset hover:-translate-y-1 hover:shadow-border-offset-lg transition-all duration-200 cursor-pointer flex flex-col justify-between h-full;
+    }
+</style>
+@endsection
 
 @section('content')
-<div id="main-exercise-page" class="w-full h-full flex flex-col bg-background md:px-8 lg:px-12 font-main">
-
+<div id="main-exercise-page" class="w-full h-full flex flex-col gap-6 bg-background p-4 md:p-8 font-main max-w-7xl mx-auto">
     <!-- Header Section -->
-    <div class="flex flex-row h-full overflow-hidden">
-        <!-- Exercise Categories Grid -->
-        <div class="flex flex-col gap-6 mb-8 p-3 h-full overflow-scroll">
-        <div class="hidden md:block mb-8">
-            <h1 class="text-h3 md:text-h2 text-dark font-bold mb-2">Exercise untuk Meringankan Stress</h1>
-            <p class="text-gray-600">Pilih teknik yang sesuai untuk membantu menenangkan pikiran dan mengurangi kecemasan</p>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 border-2 border-dark rounded-playful-lg shadow-border-offset">
+        <div>
+            <span class="px-3 py-1 rounded-full bg-secondary text-dark font-extrabold text-xs uppercase border-2 border-dark shadow-[2px_2px_0_#080330]">
+                🧘 PANDUAN EXERCISE SEJENAK
+            </span>
+            <h1 class="text-2xl md:text-4xl font-extrabold text-dark mt-2">Latihan & Teknik Merelaksasi Pikiran</h1>
+            <p class="text-sm md:text-base text-gray-600 font-semibold mt-1">Dipandu langsung oleh Tim Konselor & Admin dalam format Video interaktif dan Artikel Blog terbimbing.</p>
         </div>
-        <!-- Grounding Techniques Card -->
-        <div class="click-1 p-6 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center mr-4">
-                    <i class="fas fa-mountain text-dark text-xl"></i>
-                </div>
-                <h3 class="text-h5 text-dark font-bold">Grounding Techniques</h3>
-            </div>
-            <p class="text-gray-600 text-sm mb-4">Teknik untuk membantu fokus ke saat ini dan mengurangi kecemasan atau panik.</p>
-            <button class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center exercise-btn" data-type="grounding">
-                <i class="fas fa-play mr-2"></i> Mulai Exercise
-            </button>
-        </div>
-
-        <!-- Breathing Exercises Card -->
-        <div class="click-1 p-6 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mr-4">
-                    <i class="fas fa-wind text-dark text-xl"></i>
-                </div>
-                <h3 class="text-h5 text-dark font-bold">Pernapasan / Breathing</h3>
-            </div>
-            <p class="text-gray-600 text-sm mb-4">Latihan pernapasan untuk menenangkan sistem saraf dan menurunkan detak jantung.</p>
-            <button class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center exercise-btn" data-type="breathing">
-                <i class="fas fa-play mr-2"></i> Mulai Exercise
-            </button>
-        </div>
-
-        <!-- Mindfulness & Meditation Card -->
-        <div class="click-1 p-6 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mr-4">
-                    <i class="fas fa-spa text-dark text-xl"></i>
-                </div>
-                <h3 class="text-h5 text-dark font-bold">Mindfulness & Meditation</h3>
-            </div>
-            <p class="text-gray-600 text-sm mb-4">Meningkatkan fokus dan mengurangi overthinking melalui meditasi.</p>
-            <button class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center exercise-btn" data-type="mindfulness">
-                <i class="fas fa-play mr-2"></i> Mulai Exercise
-            </button>
-        </div>
-
-        <!-- Relaksasi Card -->
-        <div class="click-1 p-6 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center mr-4">
-                    <i class="fas fa-cloud text-dark text-xl"></i>
-                </div>
-                <h3 class="text-h5 text-dark font-bold">Relaksasi</h3>
-            </div>
-            <p class="text-gray-600 text-sm mb-4">Teknik untuk melepas ketegangan fisik dan mental.</p>
-            <button class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center exercise-btn" data-type="relaxation">
-                <i class="fas fa-play mr-2"></i> Mulai Exercise
-            </button>
-        </div>
-
-        <!-- Aktivitas Fisik Card -->
-        <div class="click-1 p-6 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mr-4">
-                    <i class="fas fa-running text-dark text-xl"></i>
-                </div>
-                <h3 class="text-h5 text-dark font-bold">Aktivitas Fisik Ringan</h3>
-            </div>
-            <p class="text-gray-600 text-sm mb-4">Meningkatkan hormon bahagia dan mengurangi stres dengan gerakan ringan.</p>
-            <button class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center exercise-btn" data-type="physical">
-                <i class="fas fa-play mr-2"></i> Mulai Exercise
-            </button>
-        </div>
-
-        <!-- Journaling Card -->
-        <div class="click-1 p-6 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mr-4">
-                    <i class="fas fa-book text-dark text-xl"></i>
-                </div>
-                <h3 class="text-h5 text-dark font-bold">Journaling & Cognitive</h3>
-            </div>
-            <p class="text-gray-600 text-sm mb-4">Ekspresikan emosi dan refleksi diri melalui tulisan.</p>
-            <a href="{{ route('user.journal') }}" class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center block">
-                <i class="fas fa-pen mr-2"></i> Buka Journal
-            </a>
-        </div>
+        <a href="{{ route('user.meditation') }}" class="px-5 py-3 bg-primary hover:bg-primary/90 text-dark font-extrabold rounded-playful-md border-2 border-dark shadow-[3px_3px_0_#080330] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center gap-2 whitespace-nowrap">
+            <span>🎵</span> Ke Audio Meditasi
+        </a>
     </div>
 
-    <!-- Exercise Simulation Area (Initially Hidden) -->
-    <div id="exercise-simulation" class="hidden md:block fixed md:block h-full md:h-auto w-full max-w-2xl mx-auto my-3 bg-white border-2 border-dark rounded-playful-md shadow-border-offset-lg p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 id="exercise-title" class="text-h4 text-dark font-bold"></h2>
-            <button id="close-exercise" class="click-1 w-10 h-10 rounded-full bg-white text-dark flex items-center justify-center border-2 border-dark shadow-border-offset">
-                <i class="fas fa-times"></i>
+    <!-- Category Filter Tabs -->
+    <div class="flex flex-wrap items-center gap-3 bg-white p-4 border-2 border-dark rounded-playful-lg shadow-border-offset">
+        <span class="text-xs font-extrabold text-dark uppercase tracking-wider mr-2">Filter Jenis Latihan:</span>
+        <button class="filter-tab-btn px-4 py-2 rounded-playful-md border-2 border-dark text-xs font-extrabold bg-primary text-black shadow-[2px_2px_0_#080330]" data-filter="all">Semua</button>
+        <button class="filter-tab-btn px-4 py-2 rounded-playful-md border-2 border-dark text-xs font-extrabold bg-white hover:bg-secondary/40 text-dark shadow-[2px_2px_0_#080330]" data-filter="video">📹 Video Exercise</button>
+        <button class="filter-tab-btn px-4 py-2 rounded-playful-md border-2 border-dark text-xs font-extrabold bg-white hover:bg-secondary/40 text-dark shadow-[2px_2px_0_#080330]" data-filter="text">📖 Artikel Blog</button>
+        <button class="filter-tab-btn px-4 py-2 rounded-playful-md border-2 border-dark text-xs font-extrabold bg-white hover:bg-secondary/40 text-dark shadow-[2px_2px_0_#080330]" data-type-filter="breathing">💨 Pernapasan</button>
+        <button class="filter-tab-btn px-4 py-2 rounded-playful-md border-2 border-dark text-xs font-extrabold bg-white hover:bg-secondary/40 text-dark shadow-[2px_2px_0_#080330]" data-type-filter="mindfulness">🧠 Mindfulness</button>
+        <button class="filter-tab-btn px-4 py-2 rounded-playful-md border-2 border-dark text-xs font-extrabold bg-white hover:bg-secondary/40 text-dark shadow-[2px_2px_0_#080330]" data-type-filter="grounding">⛰️ Grounding</button>
+    </div>
+
+    <!-- Exercise Grid List -->
+    <div id="exercise-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($exercises as $ex)
+            <div class="exercise-card item-filter" data-content-type="{{ $ex->content_type }}" data-type="{{ $ex->type }}" onclick="openExerciseModal({{ $ex->id }})">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="px-3 py-1 rounded-full border-2 border-dark text-xs font-extrabold {{ $ex->content_type === 'video' ? 'bg-purple-200 text-purple-900' : 'bg-green-200 text-green-900' }} shadow-[2px_2px_0_#080330] uppercase">
+                            {{ $ex->content_type === 'video' ? '📹 Video Exercise' : '📖 Artikel Blog' }}
+                        </span>
+                        <span class="text-xs font-extrabold text-gray-500 bg-gray-100 px-3 py-1 rounded-playful-sm border border-dark">
+                            ⏱️ {{ $ex->duration_minutes }} Menit
+                        </span>
+                    </div>
+
+                    <h3 class="text-xl font-extrabold text-dark mb-2 leading-snug hover:text-primary transition-colors">
+                        {{ $ex->title }}
+                    </h3>
+                    <p class="text-xs font-extrabold text-gray-500 mb-3">
+                        ✍️ {{ $ex->author_name }}
+                    </p>
+                    <p class="text-sm text-gray-600 line-clamp-4 leading-relaxed mb-4">
+                        {{ $ex->description }}
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t-2 border-dark/10 flex justify-between items-center">
+                    <span class="text-xs font-extrabold text-dark uppercase tracking-wider">
+                        Kategori: {{ ucfirst($ex->type) }}
+                    </span>
+                    <button class="px-4 py-2 bg-secondary hover:bg-secondary/80 border-2 border-dark rounded-playful-md text-xs font-extrabold text-dark shadow-[2px_2px_0_#080330] transition-all">
+                        {{ $ex->content_type === 'video' ? 'Tonton Video ▶' : 'Baca Artikel 📖' }}
+                    </button>
+                </div>
+            </div>
+        @empty
+            <div class="col-span-full text-center py-16 text-gray-500 font-semibold bg-white border-2 border-dark rounded-playful-lg p-8">
+                Belum ada materi exercise yang diunggah oleh konselor.
+            </div>
+        @endforelse
+    </div>
+</div>
+
+<!-- MODAL DETAIL EXERCISE (VIDEO & BLOG TEXT READER) -->
+<div id="exercise-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border-3 border-dark rounded-playful-lg shadow-[8px_8px_0_#080330] w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden relative">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-5 bg-primary border-b-3 border-dark">
+            <div class="flex items-center gap-3">
+                <span id="modal-badge-type" class="px-3 py-1 rounded-full bg-white border-2 border-dark text-xs font-extrabold text-dark shadow-[2px_2px_0_#080330] uppercase">
+                    ARTIKEL BLOG
+                </span>
+                <h3 id="modal-title" class="text-lg md:text-xl font-extrabold text-dark truncate max-w-md">
+                    Judul Exercise
+                </h3>
+            </div>
+            <button id="close-modal-btn" class="w-9 h-9 rounded-full bg-white hover:bg-red-100 text-dark hover:text-red-600 border-2 border-dark flex items-center justify-center font-bold text-lg transition shadow-[2px_2px_0_#080330]">
+                ✕
             </button>
         </div>
 
-        <div id="exercise-content" class="flex flex-col items-center">
-            <!-- Content will be dynamically loaded based on exercise type -->
+        <!-- Modal Body Content -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-4">
+            <!-- Author info -->
+            <div class="flex items-center justify-between pb-3 border-b-2 border-dark/10">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">👨‍⚕️</span>
+                    <div>
+                        <p id="modal-author" class="text-sm font-extrabold text-dark">Tim Konselor Sejenak</p>
+                        <p id="modal-duration" class="text-xs font-bold text-gray-500">Estimasi Latihan: 5 Menit</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Player Container (If Video) -->
+            <div id="video-container" class="hidden aspect-video w-full border-2 border-dark rounded-playful-md overflow-hidden shadow-[3px_3px_0_#080330]">
+                <iframe id="video-iframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <!-- Description -->
+            <p id="modal-description" class="text-base font-semibold text-dark/80 bg-secondary/20 p-4 border-2 border-dark rounded-playful-md italic">
+                Deskripsi singkat exercise...
+            </p>
+
+            <!-- Blog Content (If Text) -->
+            <div id="text-content" class="hidden text-dark leading-relaxed">
+                <!-- Rich HTML Content rendered here -->
+            </div>
         </div>
-    </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="p-4 bg-gray-50 border-t-2 border-dark flex justify-between items-center">
+            <span class="text-xs font-extrabold text-gray-500">Sejenak Wellness Guide</span>
+            <button id="complete-exercise-btn" class="px-6 py-2.5 bg-primary hover:bg-primary/90 text-dark font-extrabold text-sm rounded-playful-md border-2 border-dark shadow-[3px_3px_0_#080330] hover:translate-x-0.5 hover:translate-y-0.5 transition-all flex items-center gap-2">
+                <i class="fas fa-check-circle"></i> Tandai Selesai
+            </button>
+        </div>
     </div>
 </div>
 @endsection
 
 @section('script')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const exerciseBtns = document.querySelectorAll('.exercise-btn');
-        const exerciseSimulation = document.getElementById('exercise-simulation');
-        const exerciseTitle = document.getElementById('exercise-title');
-        const exerciseContent = document.getElementById('exercise-content');
-        const closeExerciseBtn = document.getElementById('close-exercise');
-
-        // Close exercise simulation
-        closeExerciseBtn.addEventListener('click', function() {
-            exerciseSimulation.classList.add('hidden');
-        });
-
-        // Handle exercise button clicks
-        exerciseBtns.forEach(btn => {
+    document.addEventListener("DOMContentLoaded", function() {
+        // Tab Filter
+        document.querySelectorAll('.filter-tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const exerciseType = this.getAttribute('data-type');
-                loadExercise(exerciseType);
-                exerciseSimulation.classList.remove('hidden');
+                document.querySelectorAll('.filter-tab-btn').forEach(b => {
+                    b.classList.remove('bg-primary', 'text-black');
+                    b.classList.add('bg-white', 'text-dark');
+                });
+                this.classList.add('bg-primary', 'text-black');
+                this.classList.remove('bg-white');
+
+                const contentTypeFilter = this.getAttribute('data-filter');
+                const typeFilter = this.getAttribute('data-type-filter');
+
+                document.querySelectorAll('.item-filter').forEach(card => {
+                    const matchesContent = !contentTypeFilter || contentTypeFilter === 'all' || card.getAttribute('data-content-type') === contentTypeFilter;
+                    const matchesType = !typeFilter || card.getAttribute('data-type') === typeFilter;
+
+                    if (matchesContent && matchesType) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
         });
 
-        // Load exercise based on type
-        function loadExercise(type) {
-            // Clear previous content
-            exerciseContent.innerHTML = '';
+        // Modal Functionality
+        const modal = document.getElementById('exercise-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const modalBadgeType = document.getElementById('modal-badge-type');
+        const modalTitle = document.getElementById('modal-title');
+        const modalAuthor = document.getElementById('modal-author');
+        const modalDuration = document.getElementById('modal-duration');
+        const modalDescription = document.getElementById('modal-description');
+        const videoContainer = document.getElementById('video-container');
+        const videoIframe = document.getElementById('video-iframe');
+        const textContent = document.getElementById('text-content');
+        const completeBtn = document.getElementById('complete-exercise-btn');
+        let currentExerciseId = null;
 
-            switch(type) {
-                case 'grounding':
-                    loadGroundingExercise();
-                    break;
-                case 'breathing':
-                    loadBreathingExercise();
-                    break;
-                case 'mindfulness':
-                    loadMindfulnessExercise();
-                    break;
-                case 'relaxation':
-                    loadRelaxationExercise();
-                    break;
-                case 'physical':
-                    loadPhysicalExercise();
-                    break;
-            }
-        }
+        window.openExerciseModal = async function(id) {
+            currentExerciseId = id;
+            try {
+                const res = await fetch(`/exercise/json/${id}`);
+                const result = await res.json();
 
-        // Grounding Exercise - 5-4-3-2-1 Technique
-        function loadGroundingExercise() {
-            exerciseTitle.textContent = 'Grounding Techniques - 5-4-3-2-1';
+                if (result.success && result.data) {
+                    const ex = result.data;
+                    modalTitle.textContent = ex.title;
+                    modalAuthor.textContent = ex.author_name || 'Tim Konselor Sejenak';
+                    modalDuration.textContent = `Estimasi Latihan: ${ex.duration_minutes || 5} Menit`;
+                    modalDescription.textContent = ex.description || '';
 
-            const steps = [
-                { number: 5, text: 'hal yang bisa Anda lihat' },
-                { number: 4, text: 'hal yang bisa Anda sentuh' },
-                { number: 3, text: 'hal yang bisa Anda dengar' },
-                { number: 2, text: 'hal yang bisa Anda cium' },
-                { number: 1, text: 'hal yang bisa Anda rasakan' }
-            ];
-
-            let currentStep = 0;
-
-            const container = document.createElement('div');
-            container.className = 'w-full text-center';
-
-            const stepDisplay = document.createElement('div');
-            stepDisplay.className = 'mb-8';
-
-            const numberCircle = document.createElement('div');
-            numberCircle.className = 'w-32 h-32 rounded-full bg-primary flex items-center justify-center mx-auto mb-6 border-4 border-dark';
-
-            const numberText = document.createElement('span');
-            numberText.className = 'text-h1 font-bold text-dark';
-            numberText.textContent = steps[currentStep].number;
-            numberCircle.appendChild(numberText);
-
-            const instruction = document.createElement('p');
-            instruction.className = 'text-h5 text-dark font-bold mb-2';
-            instruction.textContent = `Cari ${steps[currentStep].text}`;
-
-            const description = document.createElement('p');
-            description.className = 'text-gray-600 mb-6';
-            description.textContent = 'Fokus pada sensasi dan perhatikan detailnya';
-
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'click-1 px-6 py-3 bg-secondary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent';
-            nextBtn.innerHTML = '<i class="fas fa-arrow-right mr-2"></i> Selanjutnya';
-
-            stepDisplay.appendChild(numberCircle);
-            stepDisplay.appendChild(instruction);
-            stepDisplay.appendChild(description);
-
-            container.appendChild(stepDisplay);
-            container.appendChild(nextBtn);
-            exerciseContent.appendChild(container);
-
-            nextBtn.addEventListener('click', function() {
-                currentStep++;
-                if (currentStep < steps.length) {
-                    numberText.textContent = steps[currentStep].number;
-                    instruction.textContent = `Cari ${steps[currentStep].text}`;
-                } else {
-                    container.innerHTML = `
-                        <div class="text-center py-8">
-                            <i class="fas fa-check-circle text-6xl text-primary mb-4"></i>
-                            <h3 class="text-h4 text-dark font-bold mb-2">Exercise Selesai!</h3>
-                            <p class="text-gray-600 mb-6">Anda telah menyelesaikan teknik grounding 5-4-3-2-1</p>
-                            <button class="click-1 px-6 py-3 bg-primary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent close-exercise">
-                                Tutup
-                            </button>
-                        </div>
-                    `;
-
-                    document.querySelector('.close-exercise').addEventListener('click', function() {
-                        exerciseSimulation.classList.add('hidden');
-                    });
-                }
-            });
-        }
-
-        // Breathing Exercise - Animated Circle
-        function loadBreathingExercise() {
-            exerciseTitle.textContent = 'Latihan Pernapasan - Box Breathing';
-
-            const container = document.createElement('div');
-            container.className = 'w-full text-center';
-
-            const instructions = document.createElement('div');
-            instructions.className = 'mb-6';
-
-            const instructionText = document.createElement('p');
-            instructionText.className = 'text-h5 text-dark font-bold mb-2';
-            instructionText.textContent = 'Tarik Napas';
-            instructionText.id = 'breath-instruction';
-
-            const countdownText = document.createElement('p');
-            countdownText.className = 'text-gray-600 mb-4';
-            countdownText.id = 'breath-countdown';
-            countdownText.textContent = '4 detik';
-
-            instructions.appendChild(instructionText);
-            instructions.appendChild(countdownText);
-
-            const circleContainer = document.createElement('div');
-            circleContainer.className = 'relative w-64 h-64 mx-auto mb-8';
-
-            const breathingCircle = document.createElement('div');
-            breathingCircle.id = 'breathing-circle';
-            breathingCircle.className = 'w-full h-full rounded-full bg-primary border-4 border-dark flex items-center justify-center transition-all duration-4000 ease-in-out';
-
-            const circleText = document.createElement('span');
-            circleText.className = 'text-dark text-h4 font-bold';
-            circleText.id = 'circle-text';
-            circleText.textContent = '4';
-
-            breathingCircle.appendChild(circleText);
-            circleContainer.appendChild(breathingCircle);
-
-            const controls = document.createElement('div');
-            controls.className = 'flex justify-center space-x-4';
-
-            const startBtn = document.createElement('button');
-            startBtn.className = 'click-1 px-6 py-3 bg-primary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent';
-            startBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Mulai';
-            startBtn.id = 'start-breathing';
-
-            const pauseBtn = document.createElement('button');
-            pauseBtn.className = 'click-1 px-6 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset';
-            pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> Jeda';
-            pauseBtn.id = 'pause-breathing';
-            pauseBtn.disabled = true;
-
-            const resetBtn = document.createElement('button');
-            resetBtn.className = 'click-1 px-6 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset';
-            resetBtn.innerHTML = '<i class="fas fa-redo mr-2"></i> Ulangi';
-            resetBtn.id = 'reset-breathing';
-
-            controls.appendChild(startBtn);
-            controls.appendChild(pauseBtn);
-            controls.appendChild(resetBtn);
-
-            container.appendChild(instructions);
-            container.appendChild(circleContainer);
-            container.appendChild(controls);
-            exerciseContent.appendChild(container);
-
-            // Breathing exercise logic
-            let isBreathing = false;
-            let isPaused = false;
-            let breathPhase = 0; // 0: inhale, 1: hold after inhale, 2: exhale, 3: hold after exhale
-            let countdown = 4;
-            let breathInterval;
-
-            const phases = [
-                { instruction: 'Tarik Napas', duration: 4000 },
-                { instruction: 'Tahan Napas', duration: 4000 },
-                { instruction: 'Buang Napas', duration: 4000 },
-                { instruction: 'Tahan Napas', duration: 4000 }
-            ];
-
-            function startBreathing() {
-                isBreathing = true;
-                isPaused = false;
-                startBtn.disabled = true;
-                pauseBtn.disabled = false;
-                resetBtn.disabled = false;
-
-                breathInterval = setInterval(updateBreathing, 1000);
-                updateBreathingVisual();
-            }
-
-            function pauseBreathing() {
-                isPaused = !isPaused;
-                if (isPaused) {
-                    clearInterval(breathInterval);
-                    pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Lanjutkan';
-                } else {
-                    breathInterval = setInterval(updateBreathing, 1000);
-                    pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> Jeda';
-                }
-            }
-
-            function resetBreathing() {
-                clearInterval(breathInterval);
-                isBreathing = false;
-                isPaused = false;
-                breathPhase = 0;
-                countdown = 4;
-
-                startBtn.disabled = false;
-                pauseBtn.disabled = true;
-                pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i> Jeda';
-                resetBtn.disabled = true;
-
-                document.getElementById('breath-instruction').textContent = 'Tarik Napas';
-                document.getElementById('breath-countdown').textContent = '4 detik';
-                document.getElementById('circle-text').textContent = '4';
-                breathingCircle.style.transform = 'scale(1)';
-            }
-
-            function updateBreathing() {
-                if (!isPaused) {
-                    countdown--;
-                    document.getElementById('breath-countdown').textContent = `${countdown} detik`;
-                    document.getElementById('circle-text').textContent = countdown;
-
-                    if (countdown <= 0) {
-                        breathPhase = (breathPhase + 1) % phases.length;
-                        countdown = 4;
-                        updateBreathingVisual();
+                    if (ex.content_type === 'video') {
+                        modalBadgeType.textContent = '📹 VIDEO EXERCISE';
+                        modalBadgeType.className = 'px-3 py-1 rounded-full bg-purple-200 text-purple-900 border-2 border-dark text-xs font-extrabold shadow-[2px_2px_0_#080330]';
+                        videoContainer.classList.remove('hidden');
+                        textContent.classList.add('hidden');
+                        videoIframe.src = ex.video_url || 'https://www.youtube.com/embed/inpok4MKVLM';
+                    } else {
+                        modalBadgeType.textContent = '📖 ARTIKEL BLOG';
+                        modalBadgeType.className = 'px-3 py-1 rounded-full bg-green-200 text-green-900 border-2 border-dark text-xs font-extrabold shadow-[2px_2px_0_#080330]';
+                        videoContainer.classList.add('hidden');
+                        videoIframe.src = '';
+                        textContent.classList.remove('hidden');
+                        textContent.innerHTML = ex.content || '<p>Materi panduan teks sedang diproses oleh konselor.</p>';
                     }
+
+                    modal.classList.remove('hidden');
                 }
+            } catch (err) {
+                console.error("Gagal memuat detail exercise:", err);
             }
+        };
 
-            function updateBreathingVisual() {
-                const phase = phases[breathPhase];
-                document.getElementById('breath-instruction').textContent = phase.instruction;
-                document.getElementById('breath-countdown').textContent = `${countdown} detik`;
-                document.getElementById('circle-text').textContent = countdown;
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+            videoIframe.src = '';
+        });
 
-                // Animate circle based on breathing phase
-                if (breathPhase === 0) { // Inhale - expand
-                    breathingCircle.style.transform = 'scale(1.5)';
-                    breathingCircle.style.transition = 'transform 4s ease-in-out';
-                } else if (breathPhase === 2) { // Exhale - contract
-                    breathingCircle.style.transform = 'scale(1)';
-                    breathingCircle.style.transition = 'transform 4s ease-in-out';
-                }
-            }
-
-            // Event listeners
-            startBtn.addEventListener('click', startBreathing);
-            pauseBtn.addEventListener('click', pauseBreathing);
-            resetBtn.addEventListener('click', resetBreathing);
-        }
-
-        // Mindfulness Exercise
-        function loadMindfulnessExercise() {
-            exerciseTitle.textContent = 'Mindfulness & Meditation';
-
-            const container = document.createElement('div');
-            container.className = 'w-full text-center';
-
-            const meditationCircle = document.createElement('div');
-            meditationCircle.className = 'w-64 h-64 rounded-full bg-accent border-4 border-dark flex items-center justify-center mx-auto mb-6';
-
-            const meditationText = document.createElement('span');
-            meditationText.className = 'text-dark text-h4 font-bold';
-            meditationText.textContent = 'Fokus pada Napas';
-            meditationCircle.appendChild(meditationText);
-
-            const timer = document.createElement('div');
-            timer.className = 'text-h3 text-dark font-bold mb-4';
-            timer.textContent = '05:00';
-            timer.id = 'meditation-timer';
-
-            const instructions = document.createElement('p');
-            instructions.className = 'text-gray-600 mb-6 max-w-md mx-auto';
-            instructions.textContent = 'Duduk dengan nyaman, tutup mata, dan fokus pada sensasi napas masuk dan keluar. Jika pikiran melayang, dengan lembut bawa kembali perhatian ke napas.';
-
-            const controls = document.createElement('div');
-            controls.className = 'flex justify-center space-x-4';
-
-            const startBtn = document.createElement('button');
-            startBtn.className = 'click-1 px-6 py-3 bg-accent text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent';
-            startBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Mulai';
-            startBtn.id = 'start-meditation';
-
-            const stopBtn = document.createElement('button');
-            stopBtn.className = 'click-1 px-6 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset';
-            stopBtn.innerHTML = '<i class="fas fa-stop mr-2"></i> Berhenti';
-            stopBtn.id = 'stop-meditation';
-            stopBtn.disabled = true;
-
-            controls.appendChild(startBtn);
-            controls.appendChild(stopBtn);
-
-            container.appendChild(meditationCircle);
-            container.appendChild(timer);
-            container.appendChild(instructions);
-            container.appendChild(controls);
-            exerciseContent.appendChild(container);
-
-            // Meditation timer logic
-            let meditationTime = 300; // 5 minutes in seconds
-            let meditationInterval;
-            let isMeditating = false;
-
-            function startMeditation() {
-                isMeditating = true;
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-
-                meditationInterval = setInterval(function() {
-                    meditationTime--;
-                    updateTimerDisplay();
-
-                    if (meditationTime <= 0) {
-                        clearInterval(meditationInterval);
-                        meditationComplete();
+        completeBtn.addEventListener('click', async function() {
+            if (!currentExerciseId) return;
+            try {
+                const res = await fetch(`/exercise/json/${currentExerciseId}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
                     }
-                }, 1000);
-            }
-
-            function stopMeditation() {
-                isMeditating = false;
-                clearInterval(meditationInterval);
-                startBtn.disabled = false;
-                stopBtn.disabled = true;
-                meditationTime = 300;
-                updateTimerDisplay();
-            }
-
-            function updateTimerDisplay() {
-                const minutes = Math.floor(meditationTime / 60);
-                const seconds = meditationTime % 60;
-                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-
-            function meditationComplete() {
-                container.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="fas fa-check-circle text-6xl text-primary mb-4"></i>
-                        <h3 class="text-h4 text-dark font-bold mb-2">Meditasi Selesai!</h3>
-                        <p class="text-gray-600 mb-6">Anda telah menyelesaikan sesi mindfulness 5 menit</p>
-                        <button class="click-1 px-6 py-3 bg-primary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent close-exercise">
-                            Tutup
-                        </button>
-                    </div>
-                `;
-
-                document.querySelector('.close-exercise').addEventListener('click', function() {
-                    exerciseSimulation.classList.add('hidden');
                 });
-            }
-
-            // Event listeners
-            startBtn.addEventListener('click', startMeditation);
-            stopBtn.addEventListener('click', stopMeditation);
-        }
-
-        // Relaxation Exercise - Progressive Muscle Relaxation
-        function loadRelaxationExercise() {
-            exerciseTitle.textContent = 'Relaksasi - Progressive Muscle Relaxation';
-
-            const container = document.createElement('div');
-            container.className = 'w-full text-center';
-
-            const bodyDiagram = document.createElement('div');
-            bodyDiagram.className = 'w-64 h-64 mx-auto mb-6 relative';
-
-            // Simple body diagram using CSS
-            bodyDiagram.innerHTML = `
-                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-primary border-2 border-dark" id="head"></div>
-                <div class="absolute top-16 left-1/2 transform -translate-x-1/2 w-24 h-32 bg-primary border-2 border-dark rounded-md" id="torso"></div>
-                <div class="absolute top-16 left-1/2 transform -translate-x-1/2 -translate-y-1 w-8 h-24 bg-primary border-2 border-dark" id="left-arm"></div>
-                <div class="absolute top-16 left-1/2 transform -translate-x-1/2 -translate-y-1 w-8 h-24 bg-primary border-2 border-dark" id="right-arm"></div>
-                <div class="absolute top-48 left-1/2 transform -translate-x-1/2 w-8 h-24 bg-primary border-2 border-dark" id="left-leg"></div>
-                <div class="absolute top-48 left-1/2 transform -translate-x-1/2 w-8 h-24 bg-primary border-2 border-dark" id="right-leg"></div>
-            `;
-
-            const instruction = document.createElement('p');
-            instruction.className = 'text-h5 text-dark font-bold mb-2';
-            instruction.textContent = 'Tegangkan dan Lemaskan Otot';
-            instruction.id = 'relax-instruction';
-
-            const bodyPart = document.createElement('p');
-            bodyPart.className = 'text-gray-600 mb-4';
-            bodyPart.textContent = 'Wajah dan Leher';
-            bodyPart.id = 'relax-bodypart';
-
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'click-1 px-6 py-3 bg-primary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent';
-            nextBtn.innerHTML = '<i class="fas fa-arrow-right mr-2"></i> Selanjutnya';
-            nextBtn.id = 'next-relaxation';
-
-            container.appendChild(bodyDiagram);
-            container.appendChild(instruction);
-            container.appendChild(bodyPart);
-            container.appendChild(nextBtn);
-            exerciseContent.appendChild(container);
-
-            // PMR steps
-            const pmrSteps = [
-                { part: 'Wajah dan Leher', instruction: 'Tegangkan otot wajah dan leher selama 5 detik' },
-                { part: 'Bahu dan Lengan', instruction: 'Tegangkan bahu dan lengan selama 5 detik' },
-                { part: 'Tangan dan Jari', instruction: 'Kepalkan tangan erat selama 5 detik' },
-                { part: 'Dada dan Perut', instruction: 'Tarik napas dalam dan tegangkan otot perut' },
-                { part: 'Punggung', instruction: 'Tegangkan otot punggung selama 5 detik' },
-                { part: 'Kaki dan Kaki', instruction: 'Tegangkan otot kaki dan kaki selama 5 detik' },
-                { part: 'Seluruh Tubuh', instruction: 'Tegangkan seluruh tubuh selama 5 detik, lalu lepaskan' }
-            ];
-
-            let currentStep = 0;
-
-            function updateRelaxationStep() {
-                if (currentStep < pmrSteps.length) {
-                    bodyPart.textContent = pmrSteps[currentStep].part;
-                    instruction.textContent = pmrSteps[currentStep].instruction;
-
-                    // Highlight the current body part (simplified)
-                    const bodyParts = ['head', 'torso', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
-                    bodyParts.forEach(part => {
-                        document.getElementById(part).classList.remove('bg-secondary');
-                    });
-
-                    // Simple mapping for demo purposes
-                    if (currentStep === 0) document.getElementById('head').classList.add('bg-secondary');
-                    if (currentStep === 1 || currentStep === 2) {
-                        document.getElementById('left-arm').classList.add('bg-secondary');
-                        document.getElementById('right-arm').classList.add('bg-secondary');
-                    }
-                    if (currentStep === 3 || currentStep === 4) document.getElementById('torso').classList.add('bg-secondary');
-                    if (currentStep === 5) {
-                        document.getElementById('left-leg').classList.add('bg-secondary');
-                        document.getElementById('right-leg').classList.add('bg-secondary');
-                    }
-                    if (currentStep === 6) {
-                        bodyParts.forEach(part => {
-                            document.getElementById(part).classList.add('bg-secondary');
-                        });
-                    }
-
-                    currentStep++;
-                } else {
-                    container.innerHTML = `
-                        <div class="text-center py-8">
-                            <i class="fas fa-check-circle text-6xl text-primary mb-4"></i>
-                            <h3 class="text-h4 text-dark font-bold mb-2">Relaksasi Selesai!</h3>
-                            <p class="text-gray-600 mb-6">Anda telah menyelesaikan Progressive Muscle Relaxation</p>
-                            <button class="click-1 px-6 py-3 bg-primary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent close-exercise">
-                                Tutup
-                            </button>
-                        </div>
-                    `;
-
-                    document.querySelector('.close-exercise').addEventListener('click', function() {
-                        exerciseSimulation.classList.add('hidden');
-                    });
+                const data = await res.json();
+                if (data.success) {
+                    alert('🎉 Selamat! Latihan telah berhasil diselesaikan.');
+                    modal.classList.add('hidden');
+                    videoIframe.src = '';
                 }
+            } catch (err) {
+                console.error(err);
             }
-
-            nextBtn.addEventListener('click', updateRelaxationStep);
-        }
-
-        // Physical Exercise - Light Activity
-        function loadPhysicalExercise() {
-            exerciseTitle.textContent = 'Aktivitas Fisik Ringan';
-
-            const container = document.createElement('div');
-            container.className = 'w-full text-center';
-
-            const exerciseDisplay = document.createElement('div');
-            exerciseDisplay.className = 'mb-6';
-
-            const exerciseIcon = document.createElement('div');
-            exerciseIcon.className = 'w-32 h-32 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4';
-            exerciseIcon.innerHTML = '<i class="fas fa-child text-6xl text-dark"></i>';
-
-            const exerciseName = document.createElement('p');
-            exerciseName.className = 'text-h5 text-dark font-bold mb-2';
-            exerciseName.textContent = 'Child\'s Pose';
-            exerciseName.id = 'exercise-name';
-
-            const exerciseDescription = document.createElement('p');
-            exerciseDescription.className = 'text-gray-600 mb-4 max-w-md mx-auto';
-            exerciseDescription.textContent = 'Duduk berlutut dengan kaki rapat, bungkukkan badan ke depan hingga dahi menyentuh lantai, dan rentangkan tangan ke depan. Tahan posisi ini selama 30 detik.';
-            exerciseDescription.id = 'exercise-description';
-
-            const timer = document.createElement('div');
-            timer.className = 'text-h3 text-dark font-bold mb-4';
-            timer.textContent = '30 detik';
-            timer.id = 'exercise-timer';
-
-            exerciseDisplay.appendChild(exerciseIcon);
-            exerciseDisplay.appendChild(exerciseName);
-            exerciseDisplay.appendChild(exerciseDescription);
-            exerciseDisplay.appendChild(timer);
-
-            const controls = document.createElement('div');
-            controls.className = 'flex justify-center space-x-4';
-
-            const startBtn = document.createElement('button');
-            startBtn.className = 'click-1 px-6 py-3 bg-secondary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent';
-            startBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Mulai';
-            startBtn.id = 'start-exercise';
-
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'click-1 px-6 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset';
-            nextBtn.innerHTML = '<i class="fas fa-arrow-right mr-2"></i> Selanjutnya';
-            nextBtn.id = 'next-exercise';
-            nextBtn.disabled = true;
-
-            controls.appendChild(startBtn);
-            controls.appendChild(nextBtn);
-
-            container.appendChild(exerciseDisplay);
-            container.appendChild(controls);
-            exerciseContent.appendChild(container);
-
-            // Exercises data
-            const exercises = [
-                {
-                    name: 'Child\'s Pose',
-                    description: 'Duduk berlutut dengan kaki rapat, bungkukkan badan ke depan hingga dahi menyentuh lantai, dan rentangkan tangan ke depan. Tahan posisi ini selama 30 detik.',
-                    icon: 'child',
-                    duration: 30
-                },
-                {
-                    name: 'Cat-Cow Stretch',
-                    description: 'Posisi merangkak, lengkungkan punggung ke atas (seperti kucing) sambil menarik perut, lalu lengkungkan ke bawah sambil mengangkat kepala dan tulang ekor. Ulangi 5 kali.',
-                    icon: 'cat',
-                    duration: 30
-                },
-                {
-                    name: 'Shoulder Rolls',
-                    description: 'Duduk atau berdiri tegak, putar bahu ke belakang dalam gerakan melingkar. Lakukan 10 kali untuk setiap bahu.',
-                    icon: 'redo',
-                    duration: 30
-                }
-            ];
-
-            let currentExercise = 0;
-            let exerciseTime = exercises[0].duration;
-            let exerciseInterval;
-            let isExercising = false;
-
-            function startExercise() {
-                isExercising = true;
-                startBtn.disabled = true;
-                nextBtn.disabled = true;
-
-                exerciseInterval = setInterval(function() {
-                    exerciseTime--;
-                    timer.textContent = `${exerciseTime} detik`;
-
-                    if (exerciseTime <= 0) {
-                        clearInterval(exerciseInterval);
-                        exerciseComplete();
-                    }
-                }, 1000);
-            }
-
-            function exerciseComplete() {
-                isExercising = false;
-                startBtn.disabled = false;
-                nextBtn.disabled = false;
-
-                if (currentExercise < exercises.length - 1) {
-                    startBtn.textContent = 'Ulangi';
-                } else {
-                    nextBtn.textContent = 'Selesai';
-                }
-            }
-
-            function nextExercise() {
-                if (currentExercise < exercises.length - 1) {
-                    currentExercise++;
-                    loadExerciseData();
-                    startBtn.disabled = false;
-                    nextBtn.disabled = true;
-                    startBtn.textContent = 'Mulai';
-                } else {
-                    // All exercises completed
-                    container.innerHTML = `
-                        <div class="text-center py-8">
-                            <i class="fas fa-check-circle text-6xl text-primary mb-4"></i>
-                            <h3 class="text-h4 text-dark font-bold mb-2">Latihan Selesai!</h3>
-                            <p class="text-gray-600 mb-6">Anda telah menyelesaikan rangkaian aktivitas fisik ringan</p>
-                            <button class="click-1 px-6 py-3 bg-primary text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent close-exercise">
-                                Tutup
-                            </button>
-                        </div>
-                    `;
-
-                    document.querySelector('.close-exercise').addEventListener('click', function() {
-                        exerciseSimulation.classList.add('hidden');
-                    });
-                }
-            }
-
-            function loadExerciseData() {
-                const exercise = exercises[currentExercise];
-                exerciseName.textContent = exercise.name;
-                exerciseDescription.textContent = exercise.description;
-                exerciseIcon.innerHTML = `<i class="fas fa-${exercise.icon} text-6xl text-dark"></i>`;
-                exerciseTime = exercise.duration;
-                timer.textContent = `${exerciseTime} detik`;
-            }
-
-            // Event listeners
-            startBtn.addEventListener('click', startExercise);
-            nextBtn.addEventListener('click', nextExercise);
-
-            // Load first exercise
-            loadExerciseData();
-        }
+        });
     });
 </script>
 @endsection

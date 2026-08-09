@@ -1,9 +1,12 @@
-    @extends('layouts.guest')
-    @section('title', 'Safe Space for Everybody')
+@extends('layouts.guest')
+@section('title', 'Safe Space for Everybody')
 
-    @section('content')
-    <div class="bg-whiteflex flex-col items-center h-full w-full overflow-x-hidden no-scrollbar z-10">
-        <section class="w-[100%] py-20 flex flex-col md:flex-row items-center justify-arround gap-8 bg-primary">
+@section('content')
+<div class="bg-white flex flex-col items-center h-full w-full overflow-x-hidden no-scrollbar z-10">
+    <!-- Hero Section -->
+    <section class="w-full py-12 lg:py-20 bg-primary px-4 md:px-8 border-b-3 border-black">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
+            <!-- Left Illustration Container (Original Style) -->
             <div class="md:w-1/2 flex flex-row justify-center align-middle items-end gap-6 relative">
                 <img class="h-full" src="{{ asset('assets/component/vas.svg') }}" alt="">
                 <img src="{{ asset('assets/component/container.svg') }}" alt="" class="w-[150px] md:w-[250px]">
@@ -14,348 +17,313 @@
            hover:shadow-xl 
            cursor-pointer"> <img class="h-full flex justify-end" src="{{ asset('assets/component/table.svg') }}" alt="">
             </div>
-            <div class="md:w-1/3 flex flex-col items-center md:items-start text-center md:text-left">
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black leading-loose mb-4">
+            
+            <!-- Right Text & Action Container -->
+            <div class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent text-white font-extrabold text-xs tracking-wider uppercase border-2 border-black mb-4 shadow-[3px_3px_0_#080330]">
+                    ✨ Safe Space For Everybody
+                </span>
+                <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-black leading-tight tracking-tight mb-6">
                     Luangkan waktu refleksi cukup
-                    <span class="text-white bg-accent py-2 border-black shadow-border-offset rounded-playful-md px-6 rotate-1 inline-block">
+                    <span class="text-black bg-secondary py-1 px-4 border-3 border-black shadow-[4px_4px_0_#080330] rounded-playful-md -rotate-1 inline-block my-1">
                         Sejenak
                     </span> saja
                 </h1>
-                <b class="text-base md:text-lg text-black mb-6">
+                <p class="text-base md:text-xl text-black/90 font-semibold mb-8 max-w-lg leading-relaxed">
                     Perjalanan menuju kesejahteraan emosional dimulai di sini.
-                </b>
-                <div class="flex flex-row gap-4">
-                    <a href="{{ route('login') }}" class="nav-btn py-3 px-8 rounded-playful-md text-dark font-bold bg-secondary border-2 border-black
-                        transition-all duration-300 hover:-translate-y-1 hover:shadow-[5px_5px_0_#080330] hover:bg-secondary">
+                </p>
+                <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                    <a href="{{ route('login') }}" class="py-3.5 px-8 rounded-playful-md text-black font-extrabold bg-secondary border-3 border-black shadow-[5px_5px_0_#080330] hover:-translate-y-1 hover:shadow-[7px_7px_0_#080330] transition-all duration-200 cursor-pointer text-center">
                         Mulai Sekarang
                     </a>
-                    <a href="#" class="nav-btn py-3 px-8 rounded-playful-md text-white hover:text-black font-bold bg-accent border-2 border-black
-                    transition-all duration-300 hover:-translate-y-1 hover:shadow-[5px_5px_0_#080330] hover:bg-secondary">
-                        Lebih lanjut
+                    <a href="#second-layer" class="py-3.5 px-8 rounded-playful-md text-white font-extrabold bg-accent border-3 border-black shadow-[5px_5px_0_#080330] hover:-translate-y-1 hover:shadow-[7px_7px_0_#080330] hover:bg-accent/90 transition-all duration-200 cursor-pointer text-center">
+                        Lebih Lanjut
                     </a>
                 </div>
             </div>
-        </section>
-
-
-
-        <section id="second-layer" class="bg-white flex flex-col lg:flex-row gap-8 justify-center items-center py-20 px-8 lg:px-60 w-full">
-            <div id="second-left" class="w-[100%] lg:w-1/2 flex justify-start p-3    lg:justify-start">
-                <ul>
-                    <h2 class="text-4xl font-bold text-primary mb-6">Sejenak</h2>
-                    <li id="p-1" class="description-tab font-bold text-lg cursor-pointer relative pb-2 transition-all duration-300">Apa itu sejenak?</li>
-                    <li id="p-2" class="description-tab font-bold text-lg cursor-pointer relative pb-2 transition-all duration-300">Mengapa memilih sejenak?</li>
-                    <li id="p-3" class="description-tab font-bold text-lg cursor-pointer relative pb-2 transition-all duration-300">Misi kami</li>
-                    <li id="p-4" class="description-tab font-bold text-lg cursor-pointer relative pb-2 transition-all duration-300">Privasi dan keamanan</li>
-                </ul>
-            </div>
-            <div id="second-right" class="w-full lg:w-1/2 flex justify-center px-4">
-                <p id="describe" class="font-bold text-lg text-gray-700 leading-relaxed">Sejenak adalah platform yang dirancang untuk membantu kamu mengekspresikan
-                    perasaan dengan cara yang aman dan nyaman. Kami memahami bahwa terkadang sulit untuk
-                    mengungkapkan apa yang ada di hati, jadi kami menciptakan ruang di mana kamu bisa merenung,
-                    bersantai, dan terhubung dengan orang lain.
-                </p>
-            </div>
-        </section>
-        <section id="features" class="bg-white w-full bg-[url('assets/component/bg-third.svg')] flex justify-center">
-            <div class="w-full md:w-[50%] p-2 md:p-12 text-center
-                grid grid-cols-1 md:grid-cols-2 justify-items-center gap-2 md:gap-6 ">
-                <div class="chat-card max-w-sm bg-[#F7F7F7] border-2 border-black rounded-playful-md
-                    hover:shadow-border-bot-shadow hover:-translate-y-1
-                    p-6 m-4 cursor-pointer transition-transform duration-200">
-                    <div class="flex items-center mb-4">
-                        <img src="{{ asset('assets/icon/sparkle.svg') }}" alt="Sparkle Icon" class="w-8 h-8 mr-3">
-                        <h3 class="text-xl font-bold text-black">AI Chat</h3>
-                    </div>
-                    <div class="inner-features h-[80%] max-w-sm text-base text-black leading-relaxed border-2 border-black rounded-playful-md p-4">
-                        <p> Curhatkan apa pun ke chatbot, dan biarkan ia menyulapnya menjadi catatan harian yang personal.</p>
-                    </div>
-                </div>
-                <div class="chat-card max-w-sm bg-[#F7F7F7] border-2 border-black rounded-playful-md
-                    hover:shadow-border-bot-shadow hover:-translate-y-1
-                    p-6 m-4 cursor-pointer transition-transform duration-200">
-                    <div class="flex items-center mb-4">
-                        <img src="{{ asset('assets/icon/sparkle.svg') }}" alt="Sparkle Icon" class="w-8 h-8 mr-3">
-                        <h3 class="text-xl font-bold text-black">Meditation Guidance</h3>
-                    </div>
-                    <div class="inner-features h-[80%] max-w-sm text-base text-black leading-relaxed border-2 border-black rounded-playful-md p-4">
-                        <p> Atur waktu meditasi dengan suara white noise yang menenangkan untuk membantu relaksasi.</p>
-                    </div>
-                </div>
-                <div class="chat-card max-w-sm bg-[#F7F7F7] border-2 border-black rounded-playful-md
-                    hover:shadow-border-bot-shadow hover:-translate-y-1
-                    p-6 m-4 cursor-pointer transition-transform duration-200">
-                    <div class="flex items-center mb-4">
-                        <img src="{{ asset('assets/icon/sparkle.svg') }}" alt="Sparkle Icon" class="w-8 h-8 mr-3">
-                        <h3 class="text-xl font-bold text-black">Komunitas Suportif</h3>
-                    </div>
-                    <div class="inner-features h-[80%] max-w-sm text-base text-black leading-relaxed border-2 border-black rounded-playful-md p-4">
-                        <p> Terhubung dengan pengguna lain dalam platform sosial kami, di mana semua orang bisa saling mendukung.</p>
-                    </div>
-                </div>
-                <div class="chat-card max-w-sm bg-[#F7F7F7] border-2 border-black rounded-playful-md
-                    hover:shadow-border-bot-shadow hover:-translate-y-1
-                    p-6 m-4 cursor-pointer transition-transform duration-200">
-                    <div class="flex items-center mb-4">
-                        <img src="{{ asset('assets/icon/sparkle.svg') }}" alt="Sparkle Icon" class="w-8 h-8 mr-3">
-                        <h3 class="text-xl font-bold text-black">Privacy First</h3>
-                    </div>
-                    <div class="inner-features h-[80%] max-w-sm text-base text-black leading-relaxed border-2 border-black rounded-playful-md p-4">
-                        <p>Semua data yang kamu masukkan bersifat pribadi dan dienkripsi end-to-end, demi keamanan dan privasi maksimal.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        {{-- SEPARATOR 1: SCROLLING KE KIRI --}}
-        {{-- <div class="separator-scrolling-bg-right w-full h-14 bg-[url('assets/component/buy_now_banner.svg')] bg-repeat-x bg-[length:auto_120%] bg-[position:0_-4px] relative  bg-white border-[6px] border-black">
         </div>
-        <section id="pricing" class="bg-white w-full flex justify-center py-12 text-center ">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0 lg:px-20 w-[80%]">
-                <div class="animate-rotate-slow card w-full md:w-1/2 p-6 flex flex-col items-center justify-between rounded-xl transform transition-transform duration-300 hover:scale-105 hover:-translate-y-2" style="background-image: url('{{ asset('assets/component/price_container1.svg') }}'); background-size: contain; background-repeat: no-repeat; background-position: center; min-height: 450px;">
+    </section>
 
+    <!-- About Section ("Second Layer") -->
+    <section id="second-layer" class="w-full bg-white py-16 lg:py-24 px-4 md:px-8">
+        <div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 items-stretch">
+            <!-- Left Tabs Sidebar Card Container -->
+            <div id="second-left" class="w-full lg:w-5/12 bg-white border-3 border-black rounded-playful-lg shadow-[6px_6px_0_#080330] p-6 lg:p-8 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b-3 border-black">
+                    <span class="w-10 h-10 rounded-full bg-primary border-2 border-black flex items-center justify-center text-lg font-bold shadow-[2px_2px_0_#080330]">💡</span>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-black">Mengenai Sejenak</h2>
                 </div>
-
-                <div class="animate-rotate-slow card p-6 bg-no-repeat bg-contain rounded-xl transform transition-transform hover:scale-105 hover:translate-y-[-10px] flex justify-end aspect-[5/3] overflow-hidden">
-                    <img src="{{ asset('assets/component/price_container2.svg') }}" alt="">
-                    <div class="absolute top-2 right-0 w-20">
-                        <img class="absolute animate-rotate" src="{{ asset('assets/component/star_bg.svg') }}" alt="">
-                        <img class="absolute -left-1 -top-1 animate-rotate" src="{{ asset('assets/component/star_fg.svg') }}" alt="">
+                
+                <div class="flex flex-col gap-3">
+                    <div id="p-1" class="description-tab p-4 rounded-playful-md border-2 border-black font-extrabold text-base md:text-lg cursor-pointer transition-all duration-200 bg-white hover:bg-secondary/40 shadow-[3px_3px_0_#080330] flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-primary border border-black"></span>
+                        Apa itu Sejenak?
+                    </div>
+                    <div id="p-2" class="description-tab p-4 rounded-playful-md border-2 border-black font-extrabold text-base md:text-lg cursor-pointer transition-all duration-200 bg-white hover:bg-secondary/40 shadow-[3px_3px_0_#080330] flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-secondary border border-black"></span>
+                        Mengapa memilih Sejenak?
+                    </div>
+                    <div id="p-3" class="description-tab p-4 rounded-playful-md border-2 border-black font-extrabold text-base md:text-lg cursor-pointer transition-all duration-200 bg-white hover:bg-secondary/40 shadow-[3px_3px_0_#080330] flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-accent border border-black"></span>
+                        Misi Kami
+                    </div>
+                    <div id="p-4" class="description-tab p-4 rounded-playful-md border-2 border-black font-extrabold text-base md:text-lg cursor-pointer transition-all duration-200 bg-white hover:bg-secondary/40 shadow-[3px_3px_0_#080330] flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-success border border-black"></span>
+                        Privasi & Keamanan
                     </div>
                 </div>
             </div>
-        </section>
 
-        <div class="separator-scrolling-bg w-full h-14 bg-[url('assets/component/buy_now_banner.svg')] bg-repeat-x bg-[length:auto_120%] bg-[position:0_-4px] relative   bg-white border-[6px] border-black">
-        </div> --}}
-
-        <section id="cta-section" class="w-full h-full flex justify-center align-middle py-20 bg-primary bg-dot-pattern">
-            <div class="w-full md:w-[40%] text-center flex-col flex align-middle justify-center md:text-left p-8">
-                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4">
-                    Siap untuk memulai?
-                </h2>
-                <p class="text-base md:text-lg text-white font-medium mb-8 max-w-xl mx-auto md:mx-0">
-                    Daftar sekarang dan mulailah perjalananmu menuju kesejahteraan emosional.
-                </p>
-                <form id="go-login" action="{{ route('login') }}" method="POST" class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4">
-                    @csrf
-                    <input id="signup-start" type="email" placeholder="Email" class="w-full md:w-auto p-3 rounded-playful-md border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200">
-                    <input id="button-signup" type="submit" class="button-z py-3 px-8 rounded-playful-md text-white font-bold bg-accent border-2 border-black cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-[5px_5px_0_#080330] hover:bg-secondary">
-                </form>
+            <!-- Right Content Container Card -->
+            <div id="second-right" class="w-full lg:w-7/12 bg-secondary/30 border-3 border-black rounded-playful-lg shadow-[6px_6px_0_#080330] p-6 lg:p-10 flex flex-col justify-between relative overflow-hidden">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border-2 border-black text-xs font-extrabold text-black mb-6 shadow-[2px_2px_0_#080330]">
+                        <span>📌</span> INFORMATION DETAIL
+                    </div>
+                    <p id="describe" class="font-semibold text-lg lg:text-xl text-black/90 leading-relaxed min-h-[160px] flex items-center">
+                        Sejenak adalah platform yang dirancang untuk membantu kamu mengekspresikan
+                        perasaan dengan cara yang aman dan nyaman. Kami memahami bahwa terkadang sulit untuk
+                        mengungkapkan apa yang ada di hati, jadi kami menciptakan ruang di mana kamu bisa merenung,
+                        bersantai, dan terhubung dengan orang lain.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t-2 border-black/20 text-xs font-extrabold text-black/60 flex justify-between items-center">
+                    <span>Ruang Aman & Menenangkan</span>
+                    <span>Sejenak Ecosystem</span>
+                </div>
             </div>
-        </section>
-    </div>
-    @endsection
+        </div>
+    </section>
 
-    @section('script')
-    <script>
-        function changeDescribe() {
-            const tabs = [{
-                id: 'p-1'
-                , content: "Sejenak adalah platform yang dirancang untuk membantu kamu mengekspresikan perasaan dengan cara yang aman dan nyaman. Kami memahami bahwa terkadang sulit untuk mengungkapkan apa yang ada di hati, jadi kami menciptakan ruang di mana kamu bisa merenung, bersantai, dan terhubung dengan orang lain."
-            }, {
-                id: 'p-2'
-                , content: "Sejenak dirancang untuk siapa saja yang mencari ruang untuk merenung dan mengekspresikan diri tanpa rasa takut. Di sini, kamu dapat menemukan dukungan, baik dari diri sendiri melalui refleksi di jurnal, maupun dari orang lain melalui komunitas. Platform ini menggabungkan teknologi AI yang cerdas, meditasi yang menenangkan, dan komunitas yang saling mendukung, semua dalam satu tempat dengan keamanan yang terjamin."
-            }, {
-                id: 'p-3'
-                , content: "Kami percaya bahwa setiap orang membutuhkan ruang untuk mengekspresikan diri dengan bebas dan aman. Sejenak hadir untuk mendukung siapa saja yang merasa sulit mengungkapkan perasaan, memberikan mereka ruang untuk merenung, merefleksikan diri, dan menemukan keseimbangan emosional. Dengan teknologi yang kami kembangkan, kami berkomitmen untuk membantu setiap pengguna merasa lebih terhubung dengan diri mereka sendiri dan mendapatkan dukungan yang mereka butuhkan."
-            }, {
-                id: 'p-4'
-                , content: "Kami sangat peduli dengan privasi pengguna. Di Sejenak, setiap data yang kamu masukkan, mulai dari jurnal harian hingga riwayat suasana hati, dienkripsi end-to-end. Ini berarti hanya kamu yang dapat mengaksesnya, memberikan rasa aman dan privasi maksimal. Untuk fitur komunitas sosial, meskipun bersifat publik, kami tetap memastikan bahwa kamu memiliki kendali penuh atas apa yang kamu bagikan."
-            }];
+    <!-- Features Section ("Third Layer") -->
+    <section id="third-layer" class="w-full bg-primary/20 py-20 px-4 md:px-8 border-y-3 border-black">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-14 flex flex-col items-center">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-primary text-black font-extrabold text-xs tracking-wider uppercase border-2 border-black mb-3 shadow-[3px_3px_0_#080330]">
+                    ⚡ FITUR UNGGULAN
+                </span>
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black">
+                    Segala Yang Kamu Butuhkan
+                </h2>
+                <p class="text-base md:text-lg text-black/80 font-semibold mt-3 max-w-xl">
+                    Didesain khusus untuk membantumu mereda, merenung, dan tumbuh setiap hari.
+                </p>
+            </div>
 
-            document.querySelectorAll('#second-left ul li').forEach(li => {
-                li.classList.add('description-tab');
-            });
+            <!-- Features Card Grid Container -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+                <!-- Feature Card 1 -->
+                <div class="chat-card bg-white border-3 border-black rounded-playful-lg p-6 shadow-[5px_5px_0_#080330] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[9px_9px_0_#080330] transition-all duration-300 group cursor-pointer h-full">
+                    <div>
+                        <div class="w-14 h-14 rounded-playful-md bg-secondary border-2 border-black flex items-center justify-center mb-5 group-hover:rotate-6 transition-transform duration-300 shadow-[3px_3px_0_#080330]">
+                            <img src="{{ asset('assets/icon/chat.svg') }}" alt="AI Chat Icon" class="w-7 h-7">
+                        </div>
+                        <h3 class="text-xl font-extrabold text-black mb-2">AI Chat</h3>
+                        <p class="text-black/80 font-medium text-sm leading-relaxed">
+                            Curhatkan apa pun ke chatbot, dan biarkan ia menyulapnya menjadi catatan harian yang personal.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-3 border-t-2 border-black/10 text-xs font-extrabold text-primary-dark">
+                        Refleksi Pintar &rarr;
+                    </div>
+                </div>
 
-            const describeParagraph = document.getElementById("describe");
+                <!-- Feature Card 2 -->
+                <div class="chat-card bg-white border-3 border-black rounded-playful-lg p-6 shadow-[5px_5px_0_#080330] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[9px_9px_0_#080330] transition-all duration-300 group cursor-pointer h-full">
+                    <div>
+                        <div class="w-14 h-14 rounded-playful-md bg-primary border-2 border-black flex items-center justify-center mb-5 group-hover:-rotate-6 transition-transform duration-300 shadow-[3px_3px_0_#080330]">
+                            <img src="{{ asset('assets/icon/meditation.svg') }}" alt="Meditation Icon" class="w-7 h-7">
+                        </div>
+                        <h3 class="text-xl font-extrabold text-black mb-2">Meditation Guidance</h3>
+                        <p class="text-black/80 font-medium text-sm leading-relaxed">
+                            Atur waktu meditasi dengan suara white noise yang menenangkan untuk membantu relaksasi.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-3 border-t-2 border-black/10 text-xs font-extrabold text-primary-dark">
+                        Relaksasi Diri &rarr;
+                    </div>
+                </div>
 
-            const initialTab = document.getElementById('p-1');
-            if (initialTab) {
-                initialTab.classList.add('active');
-                describeParagraph.innerHTML = tabs[0].content;
-            }
+                <!-- Feature Card 3 -->
+                <div class="chat-card bg-white border-3 border-black rounded-playful-lg p-6 shadow-[5px_5px_0_#080330] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[9px_9px_0_#080330] transition-all duration-300 group cursor-pointer h-full">
+                    <div>
+                        <div class="w-14 h-14 rounded-playful-md bg-secondary border-2 border-black flex items-center justify-center mb-5 group-hover:rotate-6 transition-transform duration-300 shadow-[3px_3px_0_#080330]">
+                            <img src="{{ asset('assets/icon/comunity.svg') }}" alt="Community Icon" class="w-7 h-7">
+                        </div>
+                        <h3 class="text-xl font-extrabold text-black mb-2">Komunitas Suportif</h3>
+                        <p class="text-black/80 font-medium text-sm leading-relaxed">
+                            Terhubung dengan pengguna lain dalam platform sosial kami, di mana semua orang bisa saling mendukung.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-3 border-t-2 border-black/10 text-xs font-extrabold text-primary-dark">
+                        Ruang Berbagi &rarr;
+                    </div>
+                </div>
 
+                <!-- Feature Card 4 -->
+                <div class="chat-card bg-white border-3 border-black rounded-playful-lg p-6 shadow-[5px_5px_0_#080330] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[9px_9px_0_#080330] transition-all duration-300 group cursor-pointer h-full">
+                    <div>
+                        <div class="w-14 h-14 rounded-playful-md bg-primary border-2 border-black flex items-center justify-center mb-5 group-hover:-rotate-6 transition-transform duration-300 shadow-[3px_3px_0_#080330]">
+                            <img src="{{ asset('assets/icon/journal.svg') }}" alt="Privacy Icon" class="w-7 h-7">
+                        </div>
+                        <h3 class="text-xl font-extrabold text-black mb-2">Privacy First</h3>
+                        <p class="text-black/80 font-medium text-sm leading-relaxed">
+                            Semua data yang kamu masukkan bersifat pribadi dan dienkripsi end-to-end, demi keamanan dan privasi maksimal.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-3 border-t-2 border-black/10 text-xs font-extrabold text-primary-dark">
+                        Aman & Terenkripsi &rarr;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section ("Fourth Layer") -->
+    <section id="fourth-layer" class="w-full bg-white py-20 px-4 md:px-8">
+        <div class="max-w-5xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-secondary text-black font-extrabold text-xs tracking-wider uppercase border-2 border-black mb-3 shadow-[3px_3px_0_#080330]">
+                    💎 PILIHAN AKSES
+                </span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-black">
+                    Pilih Paket Sesuai Kebutuhanmu
+                </h2>
+            </div>
+
+            <!-- Pricing Grid Containers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                <!-- Free Plan Card Container -->
+                <div class="bg-white border-3 border-black rounded-playful-lg p-8 shadow-[6px_6px_0_#080330] flex flex-col justify-between hover:-translate-y-1 transition-transform duration-200">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-gray-200 text-black font-extrabold text-xs border border-black uppercase tracking-wider inline-block mb-4">
+                            Basic
+                        </span>
+                        <h3 class="text-2xl font-extrabold text-black">Akses Gratis</h3>
+                        <p class="text-black/70 font-semibold text-sm mt-1">Untuk kamu yang ingin mencoba mereda sejenak.</p>
+                        <div class="my-6">
+                            <span class="text-4xl font-extrabold text-black">Rp0</span>
+                            <span class="text-black/60 font-semibold text-sm"> / selamanya</span>
+                        </div>
+                        <ul class="space-y-3 font-semibold text-black/90 text-sm mb-8">
+                            <li class="flex items-center gap-2">✓ Jurnal Refleksi Harian</li>
+                            <li class="flex items-center gap-2">✓ Komunitas Publik</li>
+                            <li class="flex items-center gap-2">✓ Suara Meditasi Dasar</li>
+                        </ul>
+                    </div>
+                    <a href="{{ route('login') }}" class="w-full py-3.5 rounded-playful-md text-black font-extrabold bg-gray-100 border-2 border-black shadow-[3px_3px_0_#080330] hover:bg-gray-200 transition-all text-center block">
+                        Coba Gratis
+                    </a>
+                </div>
+
+                <!-- Pro Plan Card Container -->
+                <div class="bg-secondary/40 border-3 border-black rounded-playful-lg p-8 shadow-[6px_6px_0_#080330] flex flex-col justify-between hover:-translate-y-1 transition-transform duration-200 relative overflow-hidden">
+                    <div class="absolute -right-12 top-6 bg-accent text-white font-extrabold text-xs py-1 px-12 rotate-45 border-y-2 border-black uppercase shadow-sm">
+                        Terfavorit
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-primary text-black font-extrabold text-xs border border-black uppercase tracking-wider inline-block mb-4 shadow-[2px_2px_0_#080330]">
+                            Full Access
+                        </span>
+                        <h3 class="text-2xl font-extrabold text-black">Sejenak Premium</h3>
+                        <p class="text-black/70 font-semibold text-sm mt-1">Akses penuh seluruh fitur refleksi AI & meditasi.</p>
+                        <div class="my-6">
+                            <span class="text-4xl font-extrabold text-black">Unlimited</span>
+                        </div>
+                        <ul class="space-y-3 font-semibold text-black/90 text-sm mb-8">
+                            <li class="flex items-center gap-2">✓ Semua Fitur Gratis</li>
+                            <li class="flex items-center gap-2">✓ Chatbot AI Tanpa Batas</li>
+                            <li class="flex items-center gap-2">✓ Audio Meditasi Lengkap</li>
+                            <li class="flex items-center gap-2">✓ Enkripsi Privasi Maksimal</li>
+                        </ul>
+                    </div>
+                    <a href="{{ route('login') }}" class="w-full py-3.5 rounded-playful-md text-black font-extrabold bg-primary border-2 border-black shadow-[4px_4px_0_#080330] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#080330] transition-all text-center block">
+                        Mulai Sekarang
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call To Action Container Section -->
+    <section id="cta-section" class="w-full py-20 px-4 md:px-8 bg-primary border-t-3 border-black">
+        <div class="max-w-4xl mx-auto bg-white border-4 border-black rounded-playful-lg p-8 md:p-14 shadow-[8px_8px_0_#080330] text-center flex flex-col items-center justify-center relative overflow-hidden">
+            <span class="px-4 py-1.5 rounded-full bg-secondary text-black font-extrabold text-xs tracking-wider uppercase border-2 border-black mb-4 shadow-[3px_3px_0_#080330]">
+                🚀 GABUNG SEKARANG
+            </span>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-black mb-4">
+                Siap untuk Memulai?
+            </h2>
+            <p class="text-base md:text-lg text-black/80 font-semibold mb-8 max-w-xl mx-auto">
+                Daftar sekarang dan mulailah perjalananmu menuju kesejahteraan emosional yang lebih baik.
+            </p>
+            <form id="go-login" action="{{ route('login') }}" method="GET" class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md">
+                <input id="signup-start" type="email" placeholder="Masukkan Email Anda" class="w-full p-3.5 px-5 rounded-playful-md border-3 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black font-bold text-black placeholder:text-gray-400 shadow-[3px_3px_0_#080330]">
+                <button type="submit" class="w-full sm:w-auto py-3.5 px-8 rounded-playful-md text-white font-extrabold bg-accent border-3 border-black shadow-[4px_4px_0_#080330] hover:-translate-y-1 hover:shadow-[6px_6px_0_#080330] hover:bg-accent/90 transition-all duration-200 whitespace-nowrap">
+                    Daftar
+                </button>
+            </form>
+        </div>
+    </section>
+</div>
+@endsection
+
+@section('script')
+<script>
+    function changeDescribe() {
+        const tabs = [{
+            id: 'p-1',
+            content: "Sejenak adalah platform yang dirancang untuk membantu kamu mengekspresikan perasaan dengan cara yang aman dan nyaman. Kami memahami bahwa terkadang sulit untuk mengungkapkan apa yang ada di hati, jadi kami menciptakan ruang di mana kamu bisa merenung, bersantai, dan terhubung dengan orang lain."
+        }, {
+            id: 'p-2',
+            content: "Sejenak dirancang untuk siapa saja yang mencari ruang untuk merenung dan mengekspresikan diri tanpa rasa takut. Di sini, kamu dapat menemukan dukungan, baik dari diri sendiri melalui refleksi di jurnal, maupun dari orang lain melalui komunitas. Platform ini menggabungkan teknologi AI yang cerdas, meditasi yang menenangkan, dan komunitas yang saling mendukung, semua dalam satu tempat dengan keamanan yang terjamin."
+        }, {
+            id: 'p-3',
+            content: "Kami percaya bahwa setiap orang membutuhkan ruang untuk mengekspresikan diri dengan bebas dan aman. Sejenak hadir untuk mendukung siapa saja yang merasa sulit mengungkapkan perasaan, memberikan mereka ruang untuk merenung, merefleksikan diri, dan menemukan keseimbangan emosional. Dengan teknologi yang kami kembangkan, kami berkomitmen untuk membantu setiap pengguna merasa lebih terhubung dengan diri mereka sendiri dan mendapatkan dukungan yang mereka butuhkan."
+        }, {
+            id: 'p-4',
+            content: "Kami sangat peduli dengan privasi pengguna. Di Sejenak, setiap data yang kamu masukkan, mulai dari jurnal harian hingga riwayat suasana hati, dienkripsi end-to-end. Ini berarti hanya kamu yang dapat mengaksesnya, memberikan rasa aman dan privasi maksimal. Untuk fitur komunitas sosial, meskipun bersifat publik, kami tetap memastikan bahwa kamu memiliki kendali penuh atas apa yang kamu bagikan."
+        }];
+
+        const describeParagraph = document.getElementById("describe");
+
+        function setTabActive(activeId) {
             tabs.forEach(tab => {
                 const element = document.getElementById(tab.id);
                 if (element) {
-                    element.addEventListener('click', function() {
-                        document.querySelectorAll('.description-tab').forEach(t => {
-                            t.classList.remove('active');
-                            t.classList.remove('text-primary');
-                        });
-                        this.classList.add('active');
-                        this.classList.add('text-primary');
+                    if (tab.id === activeId) {
+                        element.classList.add('bg-primary', 'shadow-[5px_5px_0_#080330]', '-translate-y-0.5');
+                        element.classList.remove('bg-white', 'shadow-[3px_3px_0_#080330]');
                         describeParagraph.innerHTML = tab.content;
-                    });
+                    } else {
+                        element.classList.remove('bg-primary', 'shadow-[5px_5px_0_#080330]', '-translate-y-0.5');
+                        element.classList.add('bg-white', 'shadow-[3px_3px_0_#080330]');
+                    }
                 }
             });
-
-            document.querySelectorAll('.description-tab').forEach(tab => {
-                tab.addEventListener('mouseover', function() {
-                    if (!this.classList.contains('active')) {
-                        this.classList.add('text-primary');
-                    }
-                });
-                tab.addEventListener('mouseout', function() {
-                    if (!this.classList.contains('active')) {
-                        this.classList.remove('text-primary');
-                    }
-                });
-            });
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            changeDescribe();
+        // Set default active tab
+        setTabActive('p-1');
+
+        tabs.forEach(tab => {
+            const element = document.getElementById(tab.id);
+            if (element) {
+                element.addEventListener('click', function() {
+                    setTabActive(tab.id);
+                });
+            }
         });
+    }
 
-    </script>
+    document.addEventListener("DOMContentLoaded", function() {
+        changeDescribe();
+    });
+</script>
 
-    <style>
-        /* KEYFRAMES UNTUK SCROLLING BACKGROUND */
-        @keyframes background-scrolling-left {
-            from {
-                background-position: 0 0;
-            }
-
-            to {
-                background-position: -100% 0;
-            }
-        }
-
-        @keyframes full-rotation {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            50% {
-                transform: rotate(180deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-
-        }
-
-        @keyframes background-scrolling-right {
-            from {
-                background-position: -100% 0;
-            }
-
-            to {
-                background-position: 0 0;
-            }
-        }
-
-        /* KEYFRAMES UNTUK ANIMASI GOYANG ROTASI */
-        @keyframes rotate-slow {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            20% {
-                transform: rotate(-1deg);
-            }
-
-            40% {
-                transform: rotate(1.5deg);
-            }
-
-            60% {
-                transform: rotate(-1.5deg);
-            }
-
-            80% {
-                transform: rotate(1deg);
-            }
-
-            100% {
-                transform: rotate(0deg);
-            }
-        }
-
-        .animate-rotate {
-            animation: full-rotation 3s linear infinite;
-            transform-origin: center center;
-        }
-
-        /* KELAS CSS YANG MENGGUNAKAN KEYFRAMES */
-        .separator-scrolling-bg {
-            animation: background-scrolling-left 20s linear infinite;
-            will-change: background-position;
-        }
-
-        .separator-scrolling-bg-right {
-            animation: background-scrolling-right 20s linear infinite;
-            will-change: background-position;
-        }
-
-        .animate-rotate-slow {
-            animation: rotate-slow 4s ease-in-out infinite alternate;
-            transform-origin: center center;
-            /* Memastikan rotasi dari tengah */
-        }
-
-        /* GAYA LAINNYA */
-        .chat-card {
-            transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
-        }
-
-        .chat-card.active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #080330;
-        }
-
-        .rounded-playful {
-            border-radius: 20px;
-        }
-
-        .shadow-chat-card-initial {
-            box-shadow: 4px 4px 0px #080330;
-        }
-
-        .description-tab {
-            position: relative;
-            padding-bottom: 8px;
-        }
-
-        .description-tab::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background-color: #8FD14F;
-            transition: width 0.3s ease-in-out;
-        }
-
-        .description-tab.active,
-        .description-tab:hover {
-            color: #8FD14F;
-        }
-
-        .description-tab:hover::after,
-        .description-tab.active::after {
-            width: 100%;
-        }
-
-        .inner-features:active {
-            transform: translateY(4px);
-            box-shadow: 0 -2px 0 #080330;
-        }
-
-        #cta-section .button-z {
-            border-radius: 9999px;
-        }
-
-        .custom-bg-features {
-            background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239333ea' fill-opacity='0.4'%3E%3Cpath d='M1 3h1v1H1V3zm2-2h1v1H3V1z'/%3E%3C/g%3E%3C/svg%3E"),
-            url('{{ asset('assets/component/bg-third.png') }}');
-            background-size: 30px 30px, cover;
-            background-repeat: repeat, no-repeat;
-            background-position: 0 0, center center;
-        }
-
-    </style>
-    @endsection
+<style>
+    .chat-card {
+        will-change: transform, box-shadow;
+    }
+</style>
+@endsection

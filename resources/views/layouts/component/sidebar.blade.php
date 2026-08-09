@@ -1,14 +1,19 @@
 <aside id="sidebar" class="fixed hidden md:static w-[20vw] md:w-[6vw] min-h-[100vh] flex-col md:flex z-20 items-center py-5 transition-all duration-300 bg-gray-100">
     <nav class="flex flex-col items-center justify-center flex-1 w-full gap-4 bg-gray-100">
+        @php
+            $frameClass = Auth::check() ? (Auth::user()->avatar_frame ?? 'default') : 'default';
+        @endphp
         <div class="flex flex-col items-center gap-4 mb-0 w-full">
-            <a href="{{ route('user.profiles') }}" class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-gray-200 text-dark font-bold text-xl">
-                @if (Auth::user()->avatar)
-                <img src="{{ Auth::user()->avatar_url }}" alt="Foto Profil" class="object-cover w-full h-full">
-                @else
-                <span>
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </span>
-                @endif
+            <a href="{{ route('user.profiles') }}" class="avatar-frame-wrap frame-{{ $frameClass }} transition-transform duration-200 hover:scale-110 flex items-center justify-center">
+                <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-dark bg-gray-200 text-dark font-bold text-xl flex items-center justify-center">
+                    @if (Auth::user()->avatar)
+                    <img src="{{ Auth::user()->avatar_url }}" alt="Foto Profil" class="object-cover w-full h-full">
+                    @else
+                    <span>
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </span>
+                    @endif
+                </div>
             </a>
         </div>
 

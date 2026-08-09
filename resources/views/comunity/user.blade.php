@@ -48,6 +48,23 @@
                 scrollbar-width: none;
             }
 
+            /* Community page layout - fit within viewport */
+            .community-layout {
+                min-height: calc(100vh - 5rem);
+                padding-top: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+
+            .community-sidebar {
+                height: calc(100vh - 5rem);
+                overflow: hidden;
+            }
+
+            .community-sidebar-content {
+                height: 100%;
+                overflow-y: auto;
+            }
+
             /* Animasi like */
             @keyframes heartBeat {
                 0% {
@@ -138,46 +155,63 @@
         </style>
     @endsection
     @section('content')
-        <div
-            class="w-full min-h-full h-full flex flex-col pt-5 md:pt-0 md:flex-row gap-6 px-8 py-0 justify-center items-start overflow-auto">
+        <div class="community-layout w-full grid grid-cols-1 md:grid-cols-3 gap-5 px-4 md:px-8 py-0 justify-center items-start">
 
             <div class="w-full md:hidden ">
                 <div class="relative w-full">
-                    <input type="text" placeholder="Pencarian..."
-                        class="w-full p-4 pl-12 rounded-playful-lg border-2 border-dark shadow-border-offset font-lexend focus:outline-none">
-                    <img src="{{ asset('assets/component/emote/search.svg') }}" alt="Pencarian"
-                        class="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400">
+                    <form id="mobileSearchForm" method="GET" action="{{ route('user.comunity') }}">
+                        <input type="text" name="search" placeholder="Pencarian..." value="{{ request('search') }}"
+                            class="w-full p-4 pl-12 rounded-playful-lg border-2 border-dark shadow-border-offset font-lexend focus:outline-none">
+                        <img src="{{ asset('assets/component/emote/search.svg') }}" alt="Pencarian"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400">
+                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-dark hover:text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <aside class="left-sidebar hidden md:block w-full md:w-1/4 lg:w-1/5 h-full py-4">
-                <div class="bg-white p-6 rounded-playful-lg border-2 border-dark shadow-border-offset h-full">
+            <aside class="left-sidebar hidden md:flex w-full md:w-1/4 lg:w-1/5 community-sidebar flex-col">
+                <div class="bg-white p-6 rounded-playful-lg border-2 border-dark shadow-border-offset h-full flex flex-col">
                     <h2 class="font-bold text-xl font-exo2 text-dark mb-4">Community</h2>
-                    <nav class="space-y-2">
-                        <a href="#"
-                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend text-dark hover:bg-gray-100 transition-all">
+
+                    {{-- Search Box (Desktop) --}}
+                    <div class="relative w-full mb-4 hidden md:block">
+                        <form id="desktopSearchForm" method="GET" action="{{ route('user.comunity') }}">
+                            <input type="text" name="search" placeholder="Cari postingan..." value="{{ request('search') }}"
+                                class="w-full p-3 pl-10 rounded-playful-lg border-2 border-dark font-lexend focus:outline-none text-sm">
+                            <img src="{{ asset('assets/component/emote/search.svg') }}" alt="Pencarian"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400">
+                            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-dark hover:text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+
+                    <nav class="space-y-2 flex-1 overflow-y-auto community-sidebar-content scrollbar-none">
+                        <a href="{{ route('user.comunity') }}"
+                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend {{ !request('sort') && !request('search') && !request('user_id') ? 'bg-gray-100 text-primary' : 'text-dark hover:bg-gray-100' }} transition-all">
                             <img src="{{ asset('assets/component/emote/home.svg') }}" alt="Homepage" class="w-6 h-6">
                             Homepage
                         </a>
-                        <a href="#"
-                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend text-dark hover:bg-gray-100 transition-all">
+                        <a href="{{ route('user.comunity', ['sort' => 'popular'] + request()->only('search', 'user_id')) }}"
+                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend {{ request('sort') === 'popular' ? 'bg-gray-100 text-primary' : 'text-dark hover:bg-gray-100' }} transition-all">
                             <img src="{{ asset('assets/component/emote/popular.svg') }}" alt="Popular" class="w-6 h-6">
                             Populer
                         </a>
-                        <a href="#"
-                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend text-dark hover:bg-gray-100 transition-all">
+                        <a href="{{ route('user.comunity', ['sort' => 'latest'] + request()->only('search', 'user_id')) }}"
+                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend {{ request('sort') === 'latest' ? 'bg-gray-100 text-primary' : 'text-dark hover:bg-gray-100' }} transition-all">
                             <img src="{{ asset('assets/component/emote/new.svg') }}" alt="Terbaru" class="w-6 h-6">
                             Terbaru
                         </a>
-                        <a href="#"
-                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend text-dark hover:bg-gray-100 transition-all">
-                            <img src="{{ asset('assets/component/emote/search.svg') }}" alt="Pencarian" class="w-6 h-6">
-                            Pencarian
-                        </a>
-                        <a href="#"
-                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend text-dark hover:bg-gray-100 transition-all">
-                            <img src="{{ asset('assets/component/emote/love.svg') }}" alt="Notifikasi" class="w-6 h-6">
-                            Notifikasi
+                        <a href="{{ route('user.comunity', ['user_id' => auth()->id()] + request()->only('search', 'sort')) }}"
+                            class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend {{ request('user_id') ? 'bg-gray-100 text-primary' : 'text-dark hover:bg-gray-100' }} transition-all">
+                            <img src="{{ asset('assets/component/emote/love.svg') }}" alt="Post Saya" class="w-6 h-6">
+                            Post Saya
                         </a>
                         <a href="#" onclick="openCreatePostModal()"
                             class="flex items-center gap-2 p-2 rounded-playful-lg font-medium font-lexend text-dark hover:bg-gray-100 transition-all">
@@ -187,14 +221,36 @@
                             </svg>
                             Create
                         </a>
-
                     </nav>
                 </div>
             </aside>
 
             <main
-                class="main-content w-full h-full overflow-auto md:w-2/4 lg:w-1/2 flex-grow flex flex-col items-center gap-6 pb-8 md:pb-0 p-0 m-0 scrollbar-none">
-                <h1 class="font-bold text-3xl font-exo2 text-dark text-shadow-h1">Homepage</h1>
+                class="main-content w-full md:w-2/4 lg:w-1/2 flex flex-col items-center gap-4 md:gap-6 pb-8 md:pb-4 p-0 m-0">
+                <h1 class="font-bold text-3xl font-exo2 text-dark text-shadow-h1">
+                    @if(request('search'))
+                        Hasil Pencarian: "{{ request('search') }}"
+                    @elseif(request('sort') === 'popular')
+                        Populer
+                    @elseif(request('user_id'))
+                        Post Saya
+                    @else
+                        Homepage
+                    @endif
+                </h1>
+
+                @if(request('search') || request('user_id'))
+                    <p class="text-sm text-gray-500 font-lexend">{{ $posts->count() }} postingan ditemukan</p>
+                @endif
+
+                @if(request('search') || request('sort') || request('user_id'))
+                    <a href="{{ route('user.comunity') }}" class="text-sm text-primary hover:underline font-lexend flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Hapus Filter
+                    </a>
+                @endif
 
                 @foreach ($posts as $post)
                     <div
@@ -333,10 +389,10 @@
             </main>
 
 
-            <aside class="py-4 hidden md:flex right-sidebar w-full md:w-1/4 lg:w-1/5 h-full flex-shrink-0">
-                <div class="bg-white p-6 rounded-playful-lg border-2 border-dark shadow-border-offset h-full">
+            <aside class="hidden md:flex right-sidebar w-full md:w-1/4 lg:w-1/5 community-sidebar flex-col">
+                <div class="bg-white p-6 rounded-playful-lg border-2 border-dark shadow-border-offset h-full flex flex-col">
                     <h2 class="font-bold text-xl font-exo2 text-dark mb-4">Top User</h2>
-                    <div class="space-y-4">
+                    <div class="space-y-4 flex-1 overflow-y-auto community-sidebar-content scrollbar-none">
                         @php
                             $colors = [
                                 'bg-red-500',

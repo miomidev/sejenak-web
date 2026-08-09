@@ -16,6 +16,9 @@ use App\Models\Challenge;
 use App\Models\Circle;
 use App\Models\Mood;
 use App\Models\Journal;
+use App\Models\TaskTemplate;
+use App\Models\DailyTask;
+use App\Models\UserDailyTask;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -460,5 +463,98 @@ class AdminController extends Controller
             ->get();
 
         return view('admin.reports.index', compact('userGrowth', 'moodStats', 'sessionStats'));
+    }
+
+    /**
+     * Manajemen Task Templates
+     */
+    public function taskTemplates()
+    {
+        $templates = TaskTemplate::latest()->paginate(15);
+        $categories = TaskTemplate::CATEGORIES;
+        return view('admin.task-templates.index', compact('templates', 'categories'));
+    }
+
+    public function createTaskTemplate()
+    {
+        $categories = TaskTemplate::CATEGORIES;
+        return view('admin.task-templates.create', compact('categories'));
+    }
+
+    public function storeTaskTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category' => 'required|in:' . implode(',', TaskTemplate::CATEGORIES),
+            'type' => 'required|in:in_app,off_app',
+            'mood_trigger' => 'nullable|in:happy,sad,anxious,stressed,calm,angry,tired,energetic,relaxed',
+            'points' => 'required|integer|min:1|max:100',
+            'is_active' => 'boolean',
+        ]);
+
+        TaskTemplate::create($validated);
+        return redirect()->route('admin.task-templates')->with('success', 'Task template created successfully.');
+    }
+
+    public function editTaskTemplate(TaskTemplate $taskTemplate)
+    {
+        $categories = TaskTemplate::CATEGORIES;
+        return view('admin.task-templates.edit', compact('taskTemplate', 'categories'));
+    }
+
+    public function updateTaskTemplate(Request $request, TaskTemplate $taskTemplate)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category' => 'required|in:' . implode(',', TaskTemplate::CATEGORIES),
+            'type' => 'required|in:in_app,off_app',
+            'mood_trigger' => 'nullable|in:happy,sad,anxious,stressed,calm,angry,tired,energetic,relaxed',
+            'points' => 'required|integer|min:1|max:100',
+            'is_active' => 'boolean',
+        ]);
+
+        $taskTemplate->update($validated);
+        return redirect()->route('admin.task-templates')->with('success', 'Task template updated successfully.');
+    }
+
+    public function deleteTaskTemplate(TaskTemplate $taskTemplate)
+    {
+        $taskTemplate->delete();
+        return redirect()->back()->with('success', 'Task template deleted successfully.');
+    }
+
+    /**
+     * Statistik Daily Tasks
+     */
+    public function dailyTaskStats()
+    {
+        $stats = [
+            'total_generated' => DailyTask::count(),
+            'total_completed' => UserDailyTask::where('status', 'completed')->count(),
+            'today_generated' => DailyTask::whereDate('date', now()->toDateString())->count(),
+            'today_completed' => UserDailyTask::where('status', 'completed')
+                ->whereHas('dailyTask', function($q) {
+                    $q->whereDate('date', now()->toDateString());
+                })->count(),
+            'total_points_awarded' => UserDailyTask::where('status', 'completed')->sum('points_earned'),
+        ];
+
+        $categoryStats = DailyTask::selectRaw('category, COUNT(*) as count')
+            ->groupBy('category')
+            ->get();
+
+        $sourceStats = DailyTask::selectRaw('source, COUNT(*) as count')
+            ->groupBy('source')
+            ->get();
+
+        $weeklyStats = DailyTask::selectRaw('DATE(date) as date, COUNT(*) as generated')
+            ->where('date', '>=', now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        return view('admin.daily-tasks.stats', compact('stats', 'categoryStats', 'sourceStats', 'weeklyStats'));
     }
 }

@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             AudiosTableSeeder::class,
             DailyChallengesSeeder::class,
             BlogCategorySeeder::class,
+            TaskTemplateSeeder::class,
+            ExerciseSeeder::class,
         ]);
 
     }

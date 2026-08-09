@@ -52,67 +52,29 @@ class HistoryController extends Controller
     
     private function calculateStreak($userId)
     {
-        // Ambil tanggal aktivitas terakhir user
-        $lastPostDate = Post::where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
-            ->value('created_at');
-            
-        $lastJournalDate = Journal::where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
-            ->value('created_at');
-            
-        $lastMoodDate = Mood::where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
-            ->value('created_at');
-            
-        $lastExerciseDate = ExerciseUser::where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
-            ->value('created_at');
-            
-        // Cari tanggal terbaru dari semua aktivitas
-        $dates = array_filter([$lastPostDate, $lastJournalDate, $lastMoodDate, $lastExerciseDate]);
-        if (empty($dates)) {
-            return 0;
-        }
-        
-        $latestDate = max($dates);
         $today = Carbon::today();
-        $latestDate = Carbon::parse($latestDate)->startOfDay();
-        
-        // Jika aktivitas terakhir bukan hari ini, streak = 0
-        if ($latestDate->lt($today)) {
-            return 0;
-        }
-        
-        // Hitung hari berturut-turut
-        $streak = 1;
-        $currentDate = $today->copy()->subDay();
-        
+        $streak = 0;
+        $checkDate = $today->copy();
+
         while (true) {
-            $hasActivity = Post::where('user_id', $userId)
-                ->whereDate('created_at', $currentDate)
-                ->orWhere(function($query) use ($userId, $currentDate) {
-                    $query->where('user_id', $userId)
-                        ->whereDate('created_at', $currentDate);
-                })
-                ->orWhere(function($query) use ($userId, $currentDate) {
-                    $query->where('user_id', $userId)
-                        ->whereDate('created_at', $currentDate);
-                })
-                ->orWhere(function($query) use ($userId, $currentDate) {
-                    $query->where('user_id', $userId)
-                        ->whereDate('created_at', $currentDate);
-                })
-                ->exists();
-                
+            $hasActivity = Post::where('user_id', $userId)->whereDate('created_at', $checkDate)->exists()
+                || Journal::where('user_id', $userId)->whereDate('created_at', $checkDate)->exists()
+                || Mood::where('user_id', $userId)->whereDate('created_at', $checkDate)->exists()
+                || ExerciseUser::where('user_id', $userId)->whereDate('created_at', $checkDate)->exists();
+
             if (!$hasActivity) {
+                if ($checkDate->isToday()) {
+                    $checkDate->subDay();
+                    continue;
+                }
                 break;
             }
-            
+
             $streak++;
-            $currentDate->subDay();
+            $checkDate->subDay();
+            if ($streak > 365) break;
         }
-        
+
         return $streak;
     }
     

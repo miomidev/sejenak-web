@@ -6,6 +6,7 @@ use App\Models\Reply;
 use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReplyController extends Controller
 {
@@ -43,6 +44,7 @@ class ReplyController extends Controller
             'message' => 'Balasan berhasil ditambahkan.'
         ]);
     }
+
     public function show(Reply $reply)
     {
         $reply->load(['comment.post', 'user']);
@@ -58,19 +60,48 @@ class ReplyController extends Controller
 
     public function update(Request $request, Reply $reply)
     {
-        $validated = $request->validate([
-            'comment_id' => 'required|exists:comments,id',
-            'user_id' => 'required|exists:users,id',
-            'content' => 'required|string',
+        if ($reply->user_id !== Auth::id()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+            abort(403, 'Anda tidak memiliki izin untuk mengubah balasan ini.');
+        }
+
+        $request->validate([
+            'content' => 'required|string|max:1000',
         ]);
 
-        $reply->update($validated);
-        return redirect()->route('replies.index')->with('success', 'Reply updated successfully.');
+        $reply->update(['content' => $request->content]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'reply' => $reply,
+                'message' => 'Balasan berhasil diperbarui.'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Balasan berhasil diperbarui.');
     }
 
-    public function destroy(Reply $reply)
+    public function destroy(Request $request, Reply $reply)
     {
+        if ($reply->user_id !== Auth::id()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+            }
+            abort(403, 'Anda tidak memiliki izin untuk menghapus balasan ini.');
+        }
+
         $reply->delete();
-        return redirect()->route('replies.index')->with('success', 'Reply deleted successfully.');
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Balasan berhasil dihapus.'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Balasan berhasil dihapus.');
     }
 }

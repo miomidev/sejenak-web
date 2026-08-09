@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Konselor\KonselorController;
+use App\Http\Controllers\DailyTaskController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -73,18 +74,21 @@ Route::middleware([
     Route::post('/replies', [ReplyController::class, 'store'])->name('replies.store');
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('/post/{post}/like', [PostController::class, 'toggleLike'])->name('post.toggleLike');
-    Route::post('/comment/{comment}/like', [PostController::class, 'toggleLike'])->name('comment.like');
+    Route::post('/comment/{comment}/like', [PostController::class, 'toggleCommentLike'])->name('comment.like');
     Route::get('/comunity/edit/{id}', [PostController::class,'edit'])->name('user.comunity.edit');
     Route::delete('/comunity/edit/{id}', [PostController::class,'destroy'])->name('user.comunity.destroy');
     
     Route::get('/journal', [JournalController::class,'user'])->name('user.journal');
     Route::post('/journal', [JournalController::class,'store'])->name('user.journal.store');
     Route::get('/journal/{id}', [JournalController::class,'getJournal'])->name('user.journal.get');
+    Route::delete('/journal/{journal}', [JournalController::class,'destroy'])->name('user.journal.destroy');
     Route::post('/mood', [MoodController::class,'store'])->name('user.mood');
     
     Route::get('/history', [HistoryController::class,'user'])->name('user.history');
     Route::get('/meditation', [MeditationController::class,'user'])->name('user.meditation');
     Route::get('/exercise', [ExerciseController::class,'user'])->name('user.exercise');
+    Route::get('/exercise/json/{exercise}', [ExerciseController::class,'showJson'])->name('user.exercise.showJson');
+    Route::post('/exercise/json/{exercise}/complete', [ExerciseController::class,'completeExerciseJson'])->name('user.exercise.complete');
     Route::get('/meditation/white-noise', [MeditationController::class,'meditasi'])->name('user.meditation.meditasi');
     Route::get('/chat',[MessagesController::class, 'index'])->name('chat');
     Route::get('/chat/bot',[KonselingController::class, 'user'])->name('chat.bot');
@@ -96,6 +100,9 @@ Route::middleware([
     Route::get('/challenges',function(){
         return view('challenges.user');
     })->name('user.challenges');
+    Route::get('/daily-tasks', [DailyTaskController::class, 'index'])->name('user.daily-tasks');
+    Route::post('/daily-tasks/{id}/complete', [DailyTaskController::class, 'complete'])->name('user.daily-tasks.complete');
+    Route::post('/daily-tasks/generate', [DailyTaskController::class, 'generate'])->name('user.daily-tasks.generate');
     Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
     Route::get('/payment/success', [TransactionController::class, 'success'])->name('payment.success');
     Route::get('/payment/pending', [TransactionController::class, 'pending'])->name('payment.pending');
@@ -103,6 +110,7 @@ Route::middleware([
     Route::get('/profile', [ProfileController::class,'show'])->name('user.profiles');
     Route::get('/profile/edit/{name}', [ProfileController::class,'edit'])->name('user.profiles.edit');
     Route::patch('/profile/edit', [ProfileController::class,'update'])->name('user.profiles.update');
+    Route::post('/profile/customization', [ProfileController::class, 'updateCustomization'])->name('user.profiles.customization');
 });
 Route::group(['prefix' => 'chat', 'middleware' => 'auth'], function() {
     Route::get('/', [MessagesController::class, 'index'])->name('chat');
@@ -199,6 +207,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_ad
     // Challenge Management
     Route::get('/challenges', [AdminController::class, 'challenges'])->name('challenges');
     Route::get('/challenges/{challenge}/participants', [AdminController::class, 'challengeParticipants'])->name('challenges.participants');
+
+    // Task Template Management
+    Route::get('/task-templates', [AdminController::class, 'taskTemplates'])->name('task-templates');
+    Route::get('/task-templates/create', [AdminController::class, 'createTaskTemplate'])->name('task-templates.create');
+    Route::post('/task-templates', [AdminController::class, 'storeTaskTemplate'])->name('task-templates.store');
+    Route::get('/task-templates/{taskTemplate}/edit', [AdminController::class, 'editTaskTemplate'])->name('task-templates.edit');
+    Route::put('/task-templates/{taskTemplate}', [AdminController::class, 'updateTaskTemplate'])->name('task-templates.update');
+    Route::delete('/task-templates/{taskTemplate}', [AdminController::class, 'deleteTaskTemplate'])->name('task-templates.delete');
+    Route::get('/daily-tasks/stats', [AdminController::class, 'dailyTaskStats'])->name('daily-tasks.stats');
     
     // Circle Management (Super Admin only)
     Route::get('/circles', [AdminController::class, 'circles'])->name('circles');

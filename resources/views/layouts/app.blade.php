@@ -461,7 +461,7 @@
 
         {{-- <div class="dot-background md:m-5 md:ml-1 md:rounded-[40px] border-2 border-dark md:shadow-[5px_7px_0px_#080330] p-2 md:py-6 px-0 flex flex-col md:flex-row justify-center align-middle items-center max-w-[100vw] md:max-w-[95vw] flex-1 overflow-y-auto md:overflow-hidden"> --}}
         <div
-            class="dot-background md:m-5 md:ml-1 md:rounded-[40px] border-2 border-dark md:shadow-[5px_7px_0px_#080330]  flex flex-col md:flex-row justify-center align-middle items-center max-w-[100vw] md:max-w-[95vw] md:h-[94vh] md:max-h-[94vh] h-full overflow-y-auto md:overflow-hidden">
+            class="dot-background md:m-5 md:ml-1 md:rounded-[40px] border-2 border-dark md:shadow-[5px_7px_0px_#080330] flex flex-col items-center max-w-[100vw] md:max-w-[95vw] min-h-[94vh] h-full overflow-y-auto w-full">
             <!-- Error Notification -->
             @if (session('error') || $errors->any())
                 <div x-data="{ show: true }" x-show="show" x-transition

@@ -25,10 +25,9 @@
             background-color: purple;
         }
         
-        /* Tambahan untuk memperbaiki layout */
         .dashboard-grid {
             min-height: calc(100vh - 5rem);
-            padding-top: 1.5rem;    /* Space atas */
+            padding-top: 1.5rem;
             padding-bottom: 1.5rem;
         }
         
@@ -43,6 +42,81 @@
         .history-container {
             max-height: 200px;
             overflow-y: auto;
+        }
+
+        /* Mood Modal Animations */
+        .mood-modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .mood-modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .mood-modal-hidden {
+            display: none !important;
+            pointer-events: none !important;
+            opacity: 0;
+        }
+        .mood-modal-hidden .mood-modal-overlay {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .mood-modal-hidden .mood-modal-content {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        .mood-modal-visible {
+            display: flex !important;
+            pointer-events: auto !important;
+            opacity: 1;
+        }
+        .mood-modal-visible .mood-modal-overlay {
+            opacity: 1;
+        }
+        .mood-modal-visible .mood-modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Mood Emoji Button */
+        .mood-emoji-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .mood-emoji-btn:hover {
+            transform: scale(1.15);
+        }
+        .mood-emoji-btn.selected {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px #94B704;
+        }
+        .mood-emoji-btn .emoji-icon {
+            transition: transform 0.2s ease;
+        }
+        .mood-emoji-btn:hover .emoji-icon {
+            transform: scale(1.1);
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
         }
     </style>
 @endsection
@@ -96,44 +170,96 @@
                 </div>
                 <div class="w-1/2 flex">
                     <button id="mood-record"
-                        class="h-full w-full border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-1 text-center">
+                        class="h-full w-full border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-1 text-center hover:bg-secondary/80 transition-all active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
                         <img src="{{ asset('assets/component/emote/face.svg') }}" alt="">
                         <b>Bagaimana mood anda hari ini?</b>
                     </button>
 
-                    <div id="mood-modal"
-                        class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div
-                            class="bg-white rounded-playful-lg p-6 w-11/12 max-w-md shadow-border-offset-lg border-2 border-dark">
-                            <h2 class="text-xl font-bold mb-4 text-dark">🌈 Catat Mood Anda</h2>
-                            <label for="mood" class="block font-medium text-dark">Mood</label>
-                            <select id="mood-select"
-                                class="w-full border-2 border-dark rounded-playful-sm p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-primary">
-                                <option value="">-- Pilih mood --</option>
-                                <option value="happy">😊 Senang</option>
-                                <option value="sad">😢 Sedih</option>
-                                <option value="anxious">😰 Cemas</option>
-                                <option value="stressed">😫 Stres</option>
-                                <option value="calm">😌 Tenang</option>
-                                <option value="angry">😡 Marah</option>
-                                <option value="tired">🥱 Lelah</option>
-                                <option value="energetic">⚡ Bersemangat</option>
-                                <option value="relaxed">🌿 Santai</option>
-                            </select>
-                            <label for="note" class="block font-medium text-dark">Catatan</label>
-                            <textarea id="mood-note"
-                                class="w-full border-2 border-dark rounded-playful-sm p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="Tambahkan catatan (opsional)" rows="3"></textarea>
-                            <div class="flex justify-end gap-3">
+                    <!-- Mood Modal -->
+                    <div id="mood-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 mood-modal-hidden">
+                        <!-- Overlay -->
+                        <div class="mood-modal-overlay absolute inset-0 bg-black bg-opacity-50" id="mood-overlay"></div>
+                        
+                        <!-- Modal Content -->
+                        <div class="mood-modal-content relative bg-white rounded-playful-lg p-6 w-11/12 max-w-md shadow-border-offset-lg border-2 border-dark">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between mb-5">
+                                <h2 class="text-xl font-bold font-exo2 text-dark flex items-center gap-2">
+                                    <span class="text-2xl">🌈</span> Catat Mood
+                                </h2>
+                                <button id="close-mood-modal" class="text-dark hover:text-gray-500 transition-colors p-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Mood Selection -->
+                            <p class="text-sm font-medium text-dark mb-3">Pilih mood kamu hari ini:</p>
+                            <div class="grid grid-cols-3 gap-3 mb-5" id="mood-emoji-grid">
+                                <button type="button" data-mood="happy" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-yellow-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">😊</span>
+                                    <span class="text-xs font-medium text-dark">Senang</span>
+                                </button>
+                                <button type="button" data-mood="sad" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-blue-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">😢</span>
+                                    <span class="text-xs font-medium text-dark">Sedih</span>
+                                </button>
+                                <button type="button" data-mood="anxious" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-purple-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">😰</span>
+                                    <span class="text-xs font-medium text-dark">Cemas</span>
+                                </button>
+                                <button type="button" data-mood="stressed" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-red-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">😫</span>
+                                    <span class="text-xs font-medium text-dark">Stres</span>
+                                </button>
+                                <button type="button" data-mood="calm" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-green-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">😌</span>
+                                    <span class="text-xs font-medium text-dark">Tenang</span>
+                                </button>
+                                <button type="button" data-mood="angry" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-orange-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">😡</span>
+                                    <span class="text-xs font-medium text-dark">Marah</span>
+                                </button>
+                                <button type="button" data-mood="tired" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-gray-100 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">🥱</span>
+                                    <span class="text-xs font-medium text-dark">Lelah</span>
+                                </button>
+                                <button type="button" data-mood="energetic" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-yellow-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">⚡</span>
+                                    <span class="text-xs font-medium text-dark">Semangat</span>
+                                </button>
+                                <button type="button" data-mood="relaxed" class="mood-emoji-btn flex flex-col items-center p-3 rounded-playful-lg border-2 border-dark hover:bg-teal-50 transition-all">
+                                    <span class="emoji-icon text-3xl mb-1">🌿</span>
+                                    <span class="text-xs font-medium text-dark">Santai</span>
+                                </button>
+                            </div>
+
+                            <!-- Note -->
+                            <div class="mb-5">
+                                <label for="mood-note" class="block text-sm font-medium text-dark mb-2">Catatan (opsional)</label>
+                                <textarea id="mood-note"
+                                    class="w-full border-2 border-dark rounded-playful-sm p-3 focus:outline-none focus:ring-2 focus:ring-primary font-lexend text-sm resize-none"
+                                    placeholder="Ceritakan sedikit tentang hari ini..." rows="3"></textarea>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex gap-3">
                                 <button id="cancel-mood"
-                                    class="px-4 py-2 rounded-playful-sm bg-gray-300 text-dark border-2 border-dark shadow-border-offset-sm hover:bg-gray-400 transition-colors">❌
-                                    Batal</button>
+                                    class="flex-1 px-4 py-3 rounded-playful-sm bg-gray-200 text-dark border-2 border-dark font-medium hover:bg-gray-300 transition-all active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
+                                    Batal
+                                </button>
                                 <button id="save-mood"
-                                    class="px-4 py-2 rounded-playful-sm bg-primary text-white border-2 border-dark shadow-border-offset-sm hover:bg-green-600 transition-colors">✅
-                                    Simpan</button>
+                                    class="flex-1 px-4 py-3 rounded-playful-sm bg-primary text-white border-2 border-dark font-medium shadow-border-offset-sm hover:bg-green-600 transition-all active:shadow-none active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled>
+                                    Simpan
+                                </button>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Toast Container -->
+                    <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100]"></div>
                 </div>
             </div>
         </div>
@@ -303,42 +429,97 @@
         document.addEventListener('DOMContentLoaded', function() {
             const moodRecordBtn = document.getElementById('mood-record');
             const moodModal = document.getElementById('mood-modal');
+            const moodOverlay = document.getElementById('mood-overlay');
+            const closeMoodModalBtn = document.getElementById('close-mood-modal');
             const cancelMoodBtn = document.getElementById('cancel-mood');
             const saveMoodBtn = document.getElementById('save-mood');
-            const moodSelect = document.getElementById('mood-select');
+            const moodEmojiGrid = document.getElementById('mood-emoji-grid');
             const moodNote = document.getElementById('mood-note');
+            const toastContainer = document.getElementById('toast-container');
 
-            // Buka modal saat tombol mood record diklik
-            moodRecordBtn.addEventListener('click', function() {
-                moodModal.classList.remove('hidden');
-                moodModal.classList.add('flex');
-            });
+            let selectedMood = null;
 
-            // Tutup modal saat tombol batal diklik
-            cancelMoodBtn.addEventListener('click', function() {
-                moodModal.classList.remove('flex');
-                moodModal.classList.add('hidden');
+            // Open modal with animation
+            function openMoodModal() {
+                moodModal.classList.remove('mood-modal-hidden');
+                moodModal.classList.add('mood-modal-visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Close modal with animation
+            function closeMoodModal() {
+                moodModal.classList.remove('mood-modal-visible');
+                moodModal.classList.add('mood-modal-hidden');
+                document.body.style.overflow = '';
                 resetMoodForm();
+            }
+
+            // Show toast notification
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast-notification flex items-center gap-2 px-4 py-3 rounded-playful-lg border-2 border-dark shadow-border-offset-lg mb-3 ${
+                    type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`;
+                toast.innerHTML = `
+                    <span class="text-lg">${type === 'success' ? '✅' : '❌'}</span>
+                    <span class="font-medium font-lexend">${message}</span>
+                `;
+                toastContainer.innerHTML = '';
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+
+            // Reset form
+            function resetMoodForm() {
+                selectedMood = null;
+                moodNote.value = '';
+                document.querySelectorAll('.mood-emoji-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                saveMoodBtn.disabled = true;
+            }
+
+            // Update save button state
+            function updateSaveButton() {
+                saveMoodBtn.disabled = !selectedMood;
+            }
+
+            // Event: Open modal
+            moodRecordBtn.addEventListener('click', openMoodModal);
+
+            // Event: Close modal
+            closeMoodModalBtn.addEventListener('click', closeMoodModal);
+            cancelMoodBtn.addEventListener('click', closeMoodModal);
+            moodOverlay.addEventListener('click', closeMoodModal);
+
+            // Event: Mood emoji selection
+            moodEmojiGrid.addEventListener('click', function(e) {
+                const btn = e.target.closest('.mood-emoji-btn');
+                if (!btn) return;
+
+                // Remove selected from all
+                document.querySelectorAll('.mood-emoji-btn').forEach(b => {
+                    b.classList.remove('selected');
+                });
+
+                // Add selected to clicked
+                btn.classList.add('selected');
+                selectedMood = btn.dataset.mood;
+                updateSaveButton();
             });
 
-            // Tutup modal saat klik di luar modal
-            moodModal.addEventListener('click', function(e) {
-                if (e.target === moodModal) {
-                    moodModal.classList.remove('flex');
-                    moodModal.classList.add('hidden');
-                    resetMoodForm();
-                }
-            });
-
-            // Simpan mood saat tombol simpan diklik
+            // Event: Save mood
             saveMoodBtn.addEventListener('click', async function() {
-                const mood = moodSelect.value;
-                const note = moodNote.value;
-
-                if (!mood) {
-                    alert('Silakan pilih mood terlebih dahulu!');
+                if (!selectedMood) {
+                    showToast('Silakan pilih mood terlebih dahulu!', 'error');
                     return;
                 }
+
+                saveMoodBtn.disabled = true;
+                saveMoodBtn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span> Menyimpan...';
 
                 try {
                     const res = await fetch("{{ route('user.mood') }}", {
@@ -350,33 +531,38 @@
                         },
                         body: JSON.stringify({
                             user_id: "{{ auth()->id() }}",
-                            mood: mood,
-                            note: note
+                            mood: selectedMood,
+                            note: moodNote.value
                         })
                     });
 
                     const data = await res.json();
 
                     if (data.success) {
-                        alert('Mood berhasil disimpan ✅');
-                        moodModal.classList.remove('flex');
-                        moodModal.classList.add('hidden');
-                        resetMoodForm();
-                        window.location.reload();
+                        closeMoodModal();
+                        showToast('Mood berhasil disimpan!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     } else {
-                        alert(data.message || 'Gagal menyimpan mood ❌');
+                        showToast(data.message || 'Gagal menyimpan mood', 'error');
+                        saveMoodBtn.disabled = false;
+                        saveMoodBtn.innerHTML = 'Simpan';
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Terjadi error. Cek console untuk detail.');
+                    showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+                    saveMoodBtn.disabled = false;
+                    saveMoodBtn.innerHTML = 'Simpan';
                 }
             });
 
-            // Fungsi untuk mereset form mood
-            function resetMoodForm() {
-                moodSelect.value = '';
-                moodNote.value = '';
-            }
+            // Close modal on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !moodModal.classList.contains('mood-modal-hidden')) {
+                    closeMoodModal();
+                }
+            });
         });
     </script>
 
@@ -498,17 +684,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('moodChart').getContext('2d');
+            const chartCanvas = document.getElementById('moodChart');
+            if (!chartCanvas) return;
+            const ctx = chartCanvas.getContext('2d');
 
             const moodLabels = @json($labels);
             const moodData = @json($data);
-            const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 
-            // Warna untuk setiap hari
             const backgroundColors = [
-                'rgba(251, 146, 60, 0.6)', 'rgba(249, 115, 22, 0.6)', 'rgba(245, 158, 11, 0.6)',
-                'rgba(251, 146, 60, 0.6)', 'rgba(249, 115, 22, 0.6)', 'rgba(245, 158, 11, 0.6)',
-                'rgba(251, 146, 60, 0.6)'
+                'rgba(251, 146, 60, 0.7)', 'rgba(249, 115, 22, 0.7)', 'rgba(245, 158, 11, 0.7)',
+                'rgba(251, 146, 60, 0.7)', 'rgba(249, 115, 22, 0.7)', 'rgba(245, 158, 11, 0.7)',
+                'rgba(251, 146, 60, 0.7)'
             ];
 
             const borderColors = [
@@ -519,9 +705,9 @@
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: days,
+                    labels: moodLabels && moodLabels.length ? moodLabels : ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
                     datasets: [{
-                        label: moodLabels,
+                        label: 'Tingkat Mood',
                         data: moodData,
                         backgroundColor: backgroundColors,
                         borderColor: borderColors,
@@ -557,17 +743,19 @@
                                             label += '😢 Sedih';
                                             break;
                                         case 2:
-                                            label += '😐 Biasa';
+                                            label += '😐 Cemas / Stres / Marah';
                                             break;
                                         case 3:
-                                            label += '😊 Senang';
+                                            label += '😊 Tenang / Lelah';
                                             break;
                                         case 4:
-                                            label += '😁 Bahagia';
+                                            label += '😁 Bahagia / Santai';
                                             break;
                                         case 5:
-                                            label += '🤩 Luar Biasa';
+                                            label += '🤩 Berenergi';
                                             break;
+                                        default:
+                                            label += 'Belum ada data';
                                     }
                                     return label;
                                 }

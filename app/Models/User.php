@@ -25,6 +25,8 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'verification_requests_count',
         'last_verification_request_at',
         'avatar',
+        'avatar_frame',
+        'profile_badge',
         'bio',
         'role_id',
         'tokens_balance',
@@ -138,6 +140,16 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->belongsToMany(Exercise::class, 'exercise_user')
                         ->withPivot('status')
                         ->withTimestamps();
+    }
+
+    public function dailyTasks()
+    {
+        return $this->hasMany(DailyTask::class);
+    }
+
+    public function userDailyTasks()
+    {
+        return $this->hasMany(UserDailyTask::class);
     }
     public function isOnline()
     {

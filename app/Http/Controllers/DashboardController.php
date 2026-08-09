@@ -121,21 +121,22 @@ class DashboardController extends Controller
                                 ->unique()
                                 ->values();
 
-        // Bagian untuk Grafik Mood, tidak ada perubahan, biarkan saja
-        $moods = Mood::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('MAX(mood) as mood')
-            )
-            ->where('user_id', $userId)
-            ->where('created_at', '>=', Carbon::now()->subDays(6))
-            ->groupBy('date')
-            ->orderBy('date')
+        // Bagian untuk Grafik Mood 7 Hari Terakhir
+        $recentMoods = Mood::where('user_id', $userId)
+            ->where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+            ->orderBy('created_at', 'desc')
             ->get();
 
         $moodMap = [
-            'sad' => 1, 'anxious' => 2, 'stressed' => 2,
-            'calm' => 3, 'tired' => 3, 'happy' => 4,
-            'relaxed' => 4, 'angry' => 2, 'energetic' => 5,
+            'sad' => 1,
+            'anxious' => 2,
+            'stressed' => 2,
+            'angry' => 2,
+            'tired' => 3,
+            'calm' => 3,
+            'relaxed' => 4,
+            'happy' => 4,
+            'energetic' => 5,
         ];
 
         $data = [];
@@ -143,9 +144,14 @@ class DashboardController extends Controller
 
         for ($i = 6; $i >= 0; $i--) {
             $day = Carbon::now()->subDays($i);
-            $labels[] = $day->locale('id')->isoFormat('dd');
-            $found = $moods->firstWhere('date', $day->toDateString());
-            $data[] = $found ? ($moodMap[$found->mood] ?? 0) : 0;
+            $labels[] = $day->locale('id')->isoFormat('ddd');
+            $dateStr = $day->toDateString();
+
+            $dayMood = $recentMoods->first(function ($m) use ($dateStr) {
+                return Carbon::parse($m->created_at)->toDateString() === $dateStr;
+            });
+
+            $data[] = $dayMood ? ($moodMap[$dayMood->mood] ?? 0) : 0;
         }
 
         $quote = $this->getRandomQuote();

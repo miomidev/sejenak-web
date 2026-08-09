@@ -51,4 +51,26 @@ class ProfileController extends Controller
 
         return redirect()->route('user.profiles')->with('success', 'Profil berhasil diperbarui!');
     }
+
+    public function updateCustomization(Request $request)
+    {
+        $request->validate([
+            'avatar_frame' => 'nullable|string',
+            'profile_badge' => 'nullable|string',
+        ]);
+
+        $user = Auth::user();
+        if ($request->has('avatar_frame')) {
+            $user->avatar_frame = $request->avatar_frame;
+        }
+        if ($request->has('profile_badge')) {
+            $user->profile_badge = $request->profile_badge;
+        }
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Frame & Badge profil berhasil disimpan!'
+        ]);
+    }
 }

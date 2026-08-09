@@ -94,20 +94,35 @@ public function store(Request $request)
 
     public function destroy(Journal $journal)
     {
-        // Pastikan user hanya bisa menghapus jurnal miliknya
-        $this->authorize('delete', $journal);
+        if ($journal->user_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses untuk menghapus jurnal ini.'
+            ], 403);
+        }
+
         $journal->delete();
-        return redirect()->route('journals.index')->with('success', 'Journal deleted successfully.');
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Jurnal berhasil dihapus'
+            ], 200);
+        }
+
+        return redirect()->route('user.journal')->with('success', 'Jurnal berhasil dihapus.');
     }
 
-    public function getJournal($id){
-         $journal = Journal::where('id', $id)
-        ->where('user_id', Auth::id()) // keamanan
-        ->firstOrFail();
-       return response()->json([
-        'success' => true,
-        'data'    => $journal
-    ], 200);
+    public function getJournal($id)
+    {
+        $journal = Journal::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $journal
+        ], 200);
     }
 
     public function user(Request $request)
@@ -115,19 +130,27 @@ public function store(Request $request)
         $month = (int) $request->query('month', now()->month);
         $year = (int) $request->query('year', now()->year);
 
-        // Ambil semua jurnal bulan ini milik user
+        $user = Auth::user();
+
+        // Ambil semua tanggal unik yang memiliki jurnal di bulan & tahun ini milik user
         $journaledDays = Journal::where('user_id', Auth::id())
-            ->whereMonth('updated_at', $month)
-            ->whereYear('updated_at', $year)
-            ->pluck('updated_at')
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->pluck('created_at')
             ->map(function ($date) {
                 return $date->day;
             })
+            ->unique()
+            ->values()
             ->toArray();
-        $user = Auth::user();
-        $journals = $user->journals()->orderBy('created_at', 'desc')->paginate(10);
+
+        $journals = Journal::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $lastJournal = $journals->first();
-        return view('journals.user', compact('user', 'journals','lastJournal','journaledDays', 'month', 'year'));
+
+        return view('journals.user', compact('user', 'journals', 'lastJournal', 'journaledDays', 'month', 'year'));
     }
 
     public function search(Request $request)

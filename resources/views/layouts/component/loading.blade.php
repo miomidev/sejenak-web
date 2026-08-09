@@ -30,12 +30,23 @@
 </section>
 
 <script>
-window.addEventListener("load", () => {
-  const loadingEl = document.getElementById("loading");
-  loadingEl.classList.add("fade-out");
+(function() {
+  function hideLoading() {
+    const loadingEl = document.getElementById("loading");
+    if (!loadingEl) return;
+    loadingEl.classList.add("fade-out");
+    loadingEl.style.pointerEvents = "none";
+    setTimeout(() => {
+      loadingEl.style.display = "none";
+    }, 400);
+  }
 
-  setTimeout(() => {
-    loadingEl.style.display = "none";
-  }, 800);
-});
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    hideLoading();
+  } else {
+    window.addEventListener("load", hideLoading);
+    document.addEventListener("DOMContentLoaded", hideLoading);
+    setTimeout(hideLoading, 1000);
+  }
+})();
 </script>

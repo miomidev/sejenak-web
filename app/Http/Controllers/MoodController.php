@@ -22,21 +22,23 @@ class MoodController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'mood' => 'required|in:happy,sad,anxious,stressed,calm,angry,tired,energetic,relaxed',
-        'note' => 'nullable|string',
-    ]);
+    {
+        $validated = $request->validate([
+            'mood' => 'required|in:happy,sad,anxious,stressed,calm,angry,tired,energetic,relaxed',
+            'note' => 'nullable|string',
+            'user_id' => 'nullable|exists:users,id',
+        ]);
 
-    $mood = Mood::create($validated);
+        $validated['user_id'] = $request->user_id ?? auth()->id();
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Mood saved successfully',
-        'data' => $mood
-    ], 201); // 201 = Created
-}
+        $mood = Mood::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mood saved successfully',
+            'data' => $mood
+        ], 201);
+    }
 
 
     public function show(Mood $mood)
