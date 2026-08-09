@@ -25,33 +25,49 @@
             background-color: purple;
         }
         
-        /* Tambahan untuk memperbaiki layout */
+        /* Dashboard layout - fit dalam satu layar */
         .dashboard-grid {
-            min-height: calc(100vh - 5rem);
-            padding-top: 1.5rem;    /* Space atas */
-            padding-bottom: 1.5rem;
+            height: 100%;
+            max-height: 100%;
+            overflow: hidden;
+        }
+        
+        @media screen and (min-width: 769px) {
+            .dashboard-grid {
+                height: 100%;
+                overflow: hidden;
+            }
         }
         
         .calendar-container {
-            min-height: 250px;
+            flex-shrink: 0;
         }
         
         .mood-chart-container {
-            min-height: 200px;
+            min-height: 0;
+            flex: 1;
         }
         
         .history-container {
-            max-height: 200px;
+            max-height: 120px;
             overflow-y: auto;
+        }
+
+        /* Pastikan kolom-kolom tidak overflow */
+        @media screen and (min-width: 769px) {
+            .dashboard-col {
+                overflow: hidden;
+                max-height: 100%;
+            }
         }
     </style>
 @endsection
 
 @section('content')
-    <div class="w-full  dashboard-grid grid grid-cols-1 md:grid-cols-3 gap-5 px-8 py-12">
+    <div class="w-full dashboard-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 px-4 md:px-6 py-4 md:py-5 md:overflow-hidden">
 
         <!-- Kolom Kiri -->
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3 dashboard-col md:overflow-hidden">
             <!-- Time & Month -->
             <div class="flex flex-row gap-4 h-20">
                 <div id="timeBox"
@@ -73,7 +89,7 @@
             </div>
             
             <!-- Bottom Section -->
-            <div class="flex flex-row gap-4 flex-1">
+            <div class="flex flex-row gap-4" style="min-height: 0; flex: 1;">
                 <div class="flex flex-col flex-1 gap-4">
                     <div id="weatherBox" class="h-1/2 click-1 border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-3 text-dark">
                         <div id="weather-loading" class="text-center">
@@ -139,11 +155,11 @@
         </div>
 
         <!-- Kolom Tengah -->
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-3 dashboard-col md:overflow-hidden">
             <!-- Riwayat Jurnal -->
             <div
                 class="click-1 flex flex-col border-2 border-dark rounded-playful-lg bg-primary shadow-border-offset p-3">
-                <h3 class="text-lg font-bold text-white mb-3">Riwayat Jurnal</h3>
+                <h3 class="text-lg font-bold text-white mb-2">Riwayat Jurnal</h3>
 
                 <div class="history-container border-2 border-dark rounded-playful-lg bg-white/10 p-2">
                     @forelse ($user->journals as $item)
@@ -223,7 +239,7 @@
             ];
             $randomColor = $colors[array_rand($colors)];
         @endphp
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-3 dashboard-col md:overflow-hidden">
             <!-- Top Post -->
             <div
                 class="click-1 flex-grow border-2 border-dark rounded-playful-lg bg-primary shadow-border-offset p-4 flex flex-col">

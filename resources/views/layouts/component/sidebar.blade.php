@@ -1,4 +1,4 @@
-<aside id="sidebar" class="fixed hidden md:static w-[20vw] md:w-[6vw] min-h-[100vh] flex-col md:flex z-20 items-center py-5 transition-all duration-300 bg-gray-100">
+<aside id="sidebar" class="fixed hidden md:static w-[20vw] md:w-[6vw] min-h-[100vh] max-h-screen flex-col md:flex z-20 items-center py-5 transition-all duration-300 bg-gray-100 overflow-hidden">
     <nav class="flex flex-col items-center justify-center flex-1 w-full gap-4 bg-gray-100">
         <div class="flex flex-col items-center gap-4 mb-0 w-full">
             <a href="{{ route('user.profiles') }}" class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-gray-200 text-dark font-bold text-xl">

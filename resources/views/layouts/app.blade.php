@@ -50,8 +50,38 @@
             /* Chrome, Safari, Edge */
         }
 
+        /* Responsive zoom untuk desktop - auto scale agar fit di semua ukuran layar */
+        @media screen and (min-width: 769px) and (max-width: 1279px) {
+            html {
+                zoom: 0.85;
+            }
+        }
+
+        @media screen and (min-width: 1280px) and (max-width: 1439px) {
+            html {
+                zoom: 0.9;
+            }
+        }
+
+        @media screen and (min-width: 1440px) and (max-width: 1599px) {
+            html {
+                zoom: 0.95;
+            }
+        }
+
+        @media screen and (min-width: 1600px) {
+            html {
+                zoom: 1;
+            }
+        }
+
         body {
             font-family: 'Lexend', sans-serif;
+            overflow: hidden;
+        }
+
+        body.loaded {
+            overflow: auto;
         }
 
         .dot-background {
@@ -102,6 +132,13 @@
             right: 5vw;
             top: auto;
             left: auto;
+            /* Sembunyikan saat loading */
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #floating-chat-container.desktop.visible {
+            opacity: 1;
         }
 
         #floating-chat-avatar-btn {
@@ -461,7 +498,7 @@
 
         {{-- <div class="dot-background md:m-5 md:ml-1 md:rounded-[40px] border-2 border-dark md:shadow-[5px_7px_0px_#080330] p-2 md:py-6 px-0 flex flex-col md:flex-row justify-center align-middle items-center max-w-[100vw] md:max-w-[95vw] flex-1 overflow-y-auto md:overflow-hidden"> --}}
         <div
-            class="dot-background md:m-5 md:ml-1 md:rounded-[40px] border-2 border-dark md:shadow-[5px_7px_0px_#080330]  flex flex-col md:flex-row justify-center align-middle items-center max-w-[100vw] md:max-w-[95vw] md:h-[94vh] md:max-h-[94vh] h-full overflow-y-auto md:overflow-hidden">
+            class="dot-background md:m-5 md:ml-1 md:rounded-[40px] border-2 border-dark md:shadow-[5px_7px_0px_#080330] flex flex-col md:flex-row justify-center align-middle items-center max-w-[100vw] md:max-w-[95vw] md:h-[94vh] md:max-h-[94vh] h-full overflow-y-auto w-full">
             <!-- Error Notification -->
             @if (session('error') || $errors->any())
                 <div x-data="{ show: true }" x-show="show" x-transition

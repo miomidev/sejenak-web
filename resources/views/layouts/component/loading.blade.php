@@ -32,10 +32,17 @@
 <script>
 window.addEventListener("load", () => {
   const loadingEl = document.getElementById("loading");
-  loadingEl.classList.add("fade-out");
+  loadingEl.style.opacity = "0";
+  loadingEl.style.transition = "opacity 0.8s ease";
 
   setTimeout(() => {
     loadingEl.style.display = "none";
+    document.body.classList.add("loaded");
+    // Tampilkan floating chat setelah loading selesai
+    const floatingChat = document.getElementById("floating-chat-container");
+    if (floatingChat) {
+      floatingChat.classList.add("visible");
+    }
   }, 800);
 });
 </script>
