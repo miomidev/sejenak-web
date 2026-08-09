@@ -76,24 +76,36 @@ class TransactionController extends Controller
 
                 // Ambil data QRIS dari response
                 $paymentUrl = $data['paylink'] ?? $data['payment_url'] ?? $data['url'] ?? null;
-                $qrisUrl    = $data['qris_url'] ?? $data['qr_url'] ?? $data['qr_image'] ?? $data['qris'] ?? null;
+                $rawQris    = $data['raw_qris'] ?? null;
                 $expiredAt  = $data['expired_at'] ?? $data['expiry_time'] ?? null;
+
+                // Generate QRIS image URL dari raw_qris string menggunakan QR code API
+                $qrisImageUrl = null;
+                if ($rawQris) {
+                    $qrisImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($rawQris);
+                }
 
                 // Simpan payment URL ke snap_token
                 if ($paymentUrl) {
                     $transaction->update(['snap_token' => $paymentUrl]);
                 }
 
+                // Simpan raw_qris ke DB jika ada (untuk fitur "Bayar Lagi")
+                if ($rawQris) {
+                    $transaction->update(['snap_token' => $rawQris]);
+                }
+
                 return response()->json([
-                    'success'     => true,
-                    'order_id'    => $orderId,
-                    'payment_url' => $paymentUrl,
-                    'qris_url'    => $qrisUrl,
-                    'expired_at'  => $expiredAt,
-                    'amount'      => (int) $request->price,
-                    'package_name'=> $request->package_name,
-                    'token_amount'=> (int) $request->token_amount,
-                    'data'        => $data,
+                    'success'      => true,
+                    'order_id'     => $orderId,
+                    'payment_url'  => $paymentUrl,
+                    'qris_url'     => $qrisImageUrl,
+                    'raw_qris'     => $rawQris,
+                    'expired_at'   => $expiredAt,
+                    'amount'       => (int) $request->price,
+                    'package_name' => $request->package_name,
+                    'token_amount' => (int) $request->token_amount,
+                    'data'         => $data,
                 ]);
             } else {
                 Log::error('MiomiPay API Error', [
@@ -127,6 +139,59 @@ class TransactionController extends Controller
             'status'       => $transaction->status,
             'order_id'     => $transaction->order_id,
             'token_amount' => $transaction->token_amount,
+        ]);
+    }
+
+    /**
+     * Get QRIS for an existing pending transaction (for "Bayar Lagi" feature).
+     */
+    public function getQris(Request $request)
+    {
+        $request->validate(['order_id' => 'required|string']);
+
+        $transaction = Transaction::where('order_id', $request->order_id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$transaction) {
+            return response()->json(['error' => 'Transaksi tidak ditemukan'], 404);
+        }
+
+        if ($transaction->status !== 'pending') {
+            return response()->json(['error' => 'Transaksi sudah ' . $transaction->status], 422);
+        }
+
+        // Cek apakah sudah expired (60 menit)
+        if ($transaction->created_at->diffInMinutes(now()) >= 60) {
+            $transaction->update(['status' => 'expired']);
+            return response()->json(['error' => 'Transaksi sudah kedaluwarsa'], 422);
+        }
+
+        // Hitung sisa waktu dalam detik
+        $remainingSeconds = max(0, 3600 - $transaction->created_at->diffInSeconds(now()));
+
+        // Jika snap_token berisi raw_qris (bukan URL), generate QR image
+        $rawQris = $transaction->snap_token;
+        $qrisImageUrl = null;
+        $paymentUrl = null;
+
+        if ($rawQris && !str_starts_with($rawQris, 'http')) {
+            // snap_token berisi raw QRIS string
+            $qrisImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($rawQris);
+        } elseif ($rawQris && str_starts_with($rawQris, 'http')) {
+            // snap_token berisi payment URL
+            $paymentUrl = $rawQris;
+        }
+
+        return response()->json([
+            'success'          => true,
+            'order_id'         => $transaction->order_id,
+            'package_name'     => $transaction->package_name,
+            'token_amount'     => $transaction->token_amount,
+            'amount'           => $transaction->price,
+            'qris_url'         => $qrisImageUrl,
+            'payment_url'      => $paymentUrl,
+            'remaining_seconds'=> $remainingSeconds,
         ]);
     }
 

@@ -99,6 +99,7 @@ Route::middleware([
     })->name('user.challenges');
     Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
     Route::get('/checkout/status', [TransactionController::class, 'checkStatus'])->name('checkout.status');
+    Route::get('/checkout/qris', [TransactionController::class, 'getQris'])->name('checkout.qris');
     Route::get('/payment/success', [TransactionController::class, 'success'])->name('payment.success');
     Route::get('/payment/pending', [TransactionController::class, 'pending'])->name('payment.pending');
     Route::get('/payment/failed', [TransactionController::class, 'failed'])->name('payment.failed');
