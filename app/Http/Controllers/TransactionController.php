@@ -167,20 +167,40 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Transaksi sudah kedaluwarsa'], 422);
         }
 
-        // Hitung sisa waktu dalam detik
-        $remainingSeconds = max(0, 3600 - $transaction->created_at->diffInSeconds(now()));
+        // Hitung sisa waktu dalam detik (integer)
+        $remainingSeconds = (int) max(0, 3600 - $transaction->created_at->diffInSeconds(now()));
 
         // Jika snap_token berisi raw_qris (bukan URL), generate QR image
-        $rawQris = $transaction->snap_token;
+        $snapToken = $transaction->snap_token;
         $qrisImageUrl = null;
         $paymentUrl = null;
 
-        if ($rawQris && !str_starts_with($rawQris, 'http')) {
-            // snap_token berisi raw QRIS string
-            $qrisImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($rawQris);
-        } elseif ($rawQris && str_starts_with($rawQris, 'http')) {
+        if ($snapToken && !str_starts_with($snapToken, 'http')) {
+            // snap_token berisi raw QRIS string → generate QR image
+            $qrisImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($snapToken);
+        } elseif ($snapToken && str_starts_with($snapToken, 'http')) {
             // snap_token berisi payment URL
-            $paymentUrl = $rawQris;
+            // Coba scrape raw_qris dari halaman payment MiomiPay
+            $paymentUrl = $snapToken;
+
+            try {
+                $pageResponse = Http::get($snapToken);
+                if ($pageResponse->successful()) {
+                    $html = $pageResponse->body();
+                    // Extract raw_qris dari URL gambar QR di halaman MiomiPay
+                    // Format: data=00020101...
+                    if (preg_match('/create-qr-code[^"]*data=([^"&]+)/', $html, $matches)) {
+                        $rawQris = urldecode($matches[1]);
+                        $qrisImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($rawQris);
+                        // Simpan raw_qris ke DB untuk request berikutnya
+                        $transaction->update(['snap_token' => $rawQris]);
+                        $paymentUrl = null;
+                        Log::info('MiomiPay: raw_qris extracted from page', ['order_id' => $transaction->order_id]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('MiomiPay getQris scrape error', ['message' => $e->getMessage()]);
+            }
         }
 
         return response()->json([
