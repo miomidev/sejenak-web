@@ -105,6 +105,8 @@ Route::middleware([
     Route::post('/daily-tasks/{id}/complete', [DailyTaskController::class, 'complete'])->name('user.daily-tasks.complete');
     Route::post('/daily-tasks/generate', [DailyTaskController::class, 'generate'])->name('user.daily-tasks.generate');
     Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::get('/checkout/status', [TransactionController::class, 'checkStatus'])->name('checkout.status');
+    Route::get('/checkout/qris', [TransactionController::class, 'getQris'])->name('checkout.qris');
     Route::get('/payment/success', [TransactionController::class, 'success'])->name('payment.success');
     Route::get('/payment/pending', [TransactionController::class, 'pending'])->name('payment.pending');
     Route::get('/payment/failed', [TransactionController::class, 'failed'])->name('payment.failed');
