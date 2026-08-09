@@ -531,7 +531,7 @@
                 </div>
             @endif
             @if (session('success'))
-                <div x-data="{ show: true }" x-show="show" x-transition
+                <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 4000)"
                     class="fixed top-20 md:top-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
                     <div
                         class="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-start space-x-3 w-full">
