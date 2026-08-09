@@ -28,15 +28,15 @@ class TransactionController extends Controller
     public function showTokenPage()
     {
         $packages = [
-            ['icon' => 'fas fa-seedling', 'name' => 'Paket Basic', 'tokens' => 50, 'price' => 10000, 'color' => 'primary'],
-            ['icon' => 'fas fa-piggy-bank', 'name' => 'Paket Hemat', 'tokens' => 120, 'price' => 20000, 'color' => 'secondary'],
-            ['icon' => 'fas fa-gift', 'name' => 'Paket Medium', 'tokens' => 250, 'price' => 40000, 'color' => 'orange'],
-            ['icon' => 'fas fa-star', 'name' => 'Paket Mega', 'tokens' => 550, 'price' => 80000, 'color' => 'primary'],
-            ['icon' => 'fas fa-fire', 'name' => 'Paket Super', 'tokens' => 1200, 'price' => 150000, 'color' => 'secondary'],
-            ['icon' => 'fas fa-rocket', 'name' => 'Paket Ultimate', 'tokens' => 3000, 'price' => 300000, 'color' => 'orange'],
-            ['icon' => 'fas fa-heart', 'name' => 'Paket Keluarga', 'tokens' => 5000, 'price' => 450000, 'color' => 'primary'],
-            ['icon' => 'fas fa-calendar-alt', 'name' => 'Paket Tahunan', 'tokens' => 10000, 'price' => 600000, 'color' => 'secondary'],
-            ['icon' => 'fas fa-infinity', 'name' => 'Paket Sejenak', 'tokens' => 25000, 'price' => 1500000, 'color' => 'orange'],
+            ['icon' => 'fas fa-seedling', 'name' => 'Paket Basic', 'tokens' => 50, 'price' => 2500, 'color' => 'primary'],
+            ['icon' => 'fas fa-piggy-bank', 'name' => 'Paket Hemat', 'tokens' => 120, 'price' => 6000, 'color' => 'secondary'],
+            ['icon' => 'fas fa-gift', 'name' => 'Paket Medium', 'tokens' => 250, 'price' => 12500, 'color' => 'orange'],
+            ['icon' => 'fas fa-star', 'name' => 'Paket Mega', 'tokens' => 550, 'price' => 27500, 'color' => 'primary'],
+            ['icon' => 'fas fa-fire', 'name' => 'Paket Super', 'tokens' => 1200, 'price' => 60000, 'color' => 'secondary'],
+            ['icon' => 'fas fa-rocket', 'name' => 'Paket Ultimate', 'tokens' => 3000, 'price' => 150000, 'color' => 'orange'],
+            ['icon' => 'fas fa-heart', 'name' => 'Paket Keluarga', 'tokens' => 5000, 'price' => 250000, 'color' => 'primary'],
+            ['icon' => 'fas fa-calendar-alt', 'name' => 'Paket Tahunan', 'tokens' => 10000, 'price' => 500000, 'color' => 'secondary'],
+            ['icon' => 'fas fa-infinity', 'name' => 'Paket Sejenak', 'tokens' => 25000, 'price' => 1250000, 'color' => 'orange'],
 
             // ...tambahkan semua paket lainnya di sini
         ];

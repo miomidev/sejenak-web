@@ -79,8 +79,8 @@
             </div>
         </div>
 
-        <div class="w-full md:w-1/3 flex flex-col gap-6">
-            <div class="hover-1 h-2/3 bg-white p-4 rounded-playful-lg border-2 border-dark shadow-border-offset">
+        <div class="w-full md:w-1/3 flex flex-col gap-6 md:overflow-hidden">
+            <div class="hover-1 flex-1 bg-white p-4 rounded-playful-lg border-2 border-dark shadow-border-offset overflow-y-auto">
                 <h3 class="text-h5 font-bold text-dark mb-4">Pengaturan Akun</h3>
                 <div class="flex flex-col gap-4">
                     @unless(Auth::check() && in_array(Auth::user()->role->name, ['super_admin', 'admin', 'konselor']))
@@ -100,9 +100,9 @@
                 </div>
             </div>
 
-            <div class="hover-1 md:h-1/3 h-auto bg-white p-4 rounded-playful-lg border-2 border-dark shadow-border-offset">
-                <h3 class="text-h5 font-bold text-dark mb-4">Akses Cepat</h3>
-                <div class="flex flex-col gap-4">
+            <div class="hover-1 bg-white p-4 rounded-playful-lg border-2 border-dark shadow-border-offset flex-1">
+                <h3 class="text-h5 font-bold text-dark mb-3">Akses Cepat</h3>
+                <div class="flex flex-col gap-3">
                     @if(Auth::check() && in_array(Auth::user()->role->name, ['super_admin', 'admin']))
                     <a href="{{ route('admin.dashboard') }}" class="click-1 w-full px-4 py-2 bg-secondary text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-yellow-300 transition-all duration-200">
                         <i class="fas fa-tachometer-alt mr-2"></i> Dashboard Admin

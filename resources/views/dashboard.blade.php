@@ -44,8 +44,9 @@
         }
         
         .mood-chart-container {
-            min-height: 0;
+            min-height: 150px;
             flex: 1;
+            overflow: hidden;
         }
         
         .history-container {
@@ -89,9 +90,9 @@
             </div>
             
             <!-- Bottom Section -->
-            <div class="flex flex-row gap-4" style="min-height: 0; flex: 1;">
+            <div class="flex flex-row gap-3" style="min-height: 100px; flex: 1;">
                 <div class="flex flex-col flex-1 gap-4">
-                    <div id="weatherBox" class="h-1/2 click-1 border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-3 text-dark">
+                    <div id="weatherBox" class="h-1/2 click-1 border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-2 text-dark" style="min-height: 60px;">
                         <div id="weather-loading" class="text-center">
                             <p class="font-bold">Memuat cuaca...</p>
                             <p class="text-xs">Izinkan lokasi</p>
@@ -105,16 +106,16 @@
                             <p class="font-bold text-sm">Gagal memuat</p>
                         </div>
                     </div>
-                    <a href="{{ route('chat.bot') }}" class="h-1/2 border border-dark rounded-playful-lg bg-secondary flex items-center justify-center p-3 gap-3">
-                        <img src="{{ asset('assets/component/emote/ai_icon.svg') }}" alt="AI Icon">
-                        <p class="text-lg font-bold">Chat Nemo</p>
+                    <a href="{{ route('chat.bot') }}" class="h-1/2 border border-dark rounded-playful-lg bg-secondary flex items-center justify-center p-2 gap-2" style="min-height: 50px;">
+                        <img src="{{ asset('assets/component/emote/ai_icon.svg') }}" alt="AI Icon" class="w-6 h-6">
+                        <p class="text-sm font-bold">Chat Nemo</p>
                     </a>
                 </div>
                 <div class="w-1/2 flex">
                     <button id="mood-record"
-                        class="h-full w-full border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-1 text-center">
-                        <img src="{{ asset('assets/component/emote/face.svg') }}" alt="">
-                        <b>Bagaimana mood anda hari ini?</b>
+                        class="h-full w-full border border-dark rounded-playful-lg bg-secondary flex flex-col items-center justify-center p-2 text-center gap-1">
+                        <img src="{{ asset('assets/component/emote/face.svg') }}" alt="" class="w-12 h-12 flex-shrink-0">
+                        <b class="text-sm leading-tight">Bagaimana mood<br>anda hari ini?</b>
                     </button>
 
                     <div id="mood-modal"
@@ -245,7 +246,7 @@
                 class="click-1 flex-grow border-2 border-dark rounded-playful-lg bg-primary shadow-border-offset p-4 flex flex-col">
                 @if ($topPost)
                     <a href="#" class="flex flex-col gap-3 h-full">
-                        <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
                             @if ($topPost->is_anonymous)
                                 <div
                                     class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-dark shadow-border-offset mr-3 font-bold text-white {{ $randomColor }}">
@@ -277,7 +278,7 @@
 
                         @if ($topPost->image)
                             <div
-                                class="w-full h-48 rounded-playful-lg border-2 border-dark overflow-hidden shadow-border-offset">
+                                class="w-full h-28 rounded-playful-lg border-2 border-dark overflow-hidden shadow-border-offset">
                                 <img src="{{ asset('storage/' . $topPost->image) }}" alt="Post Image"
                                     class="w-full h-full object-cover">
                             </div>
@@ -285,7 +286,7 @@
 
                         <div class="text-sm text-gray-700">
                             <p class="font-medium font-lexend text-dark">
-                                {{ \Illuminate\Support\Str::limit($topPost->content, 150, '...') }}</p>
+                                {{ \Illuminate\Support\Str::limit($topPost->content, 100, '...') }}</p>
                         </div>
                     </a>
                 @else
