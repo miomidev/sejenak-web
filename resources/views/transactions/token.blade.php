@@ -3,9 +3,6 @@
 @section('title', 'Top Up Token')
 
 @push('scripts')
-    <script type="text/javascript"
-      src="{{ config('midtrans.snap_url') }}"
-      data-client-key="{{ config('midtrans.client_key') }}"></script>
 @endpush
 
 
@@ -138,27 +135,18 @@
 
                     const result = await response.json();
 
-                    if(result.snapToken) {
-                        window.snap.pay(result.snapToken, {
-                            onSuccess: function(result){
-                                window.location.href = '{{ route("payment.success") }}'; 
-                            },
-                            onPending: function(result){
-                                window.location.href = '{{ route("payment.pending") }}'; 
-                            },
-                            onError: function(result){
-                                window.location.href = '{{ route("payment.failed") }}';
-                            },
-                            onClose: function(){
-                                console.log('Popup pembayaran ditutup oleh pengguna.');
-                            }
-                        });
-                        this.disabled = false;
-                        this.innerHTML = originalButtonText;
-
+                    // MiomiPay: redirect ke payment_url
+                    if (result.success && result.payment_url) {
+                        window.location.href = result.payment_url;
                     } else if (result.error) {
                         console.error('API Error:', result.error);
                         alert('Terjadi kesalahan saat membuat transaksi: ' + result.error);
+                        this.disabled = false;
+                        this.innerHTML = originalButtonText;
+                    } else {
+                        alert('Gagal mendapatkan link pembayaran. Silakan coba lagi.');
+                        this.disabled = false;
+                        this.innerHTML = originalButtonText;
                     }
                 } catch (error) {
                     console.error('Network/Fetch Error:', error);
