@@ -6,9 +6,17 @@ services:
     container_name: sejenak-web
     restart: always
     ports:
-      - "8089:80"
+      - "8093:80"
     volumes:
       # Persist storage directory for uploads/logs
       - ./storage:/var/www/html/storage
       # Mount environment file to prevent losing settings
       - ./.env:/var/www/html/.env
+    networks:
+      - default
+      - miomidev-network
+
+networks:
+  miomidev-network:
+    external: true
+    name: miomidev-web_miomidev-network
