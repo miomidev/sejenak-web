@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.konselor')
 
 @section('title', 'Edit Audio')
 
@@ -10,13 +10,13 @@
             <h1 class="text-h2 font-bold text-dark">Edit Audio</h1>
             <p class="text-gray-600 mt-1">Mengubah detail untuk: <span class="font-semibold">{{ $audio->title }}</span></p>
         </div>
-        <a href="{{ route('admin.audios') }}" class="inline-block px-6 py-3 bg-gray-200 text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-300">
+        <a href="{{ route('konselor.audios') }}" class="inline-block px-6 py-3 bg-gray-200 text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-300">
             <i class="fas fa-arrow-left mr-2"></i> Batal
         </a>
     </div>
 
     <div class="bg-white p-6 rounded-playful-sm border-2 border-dark shadow-border-offset">
-        <form action="{{ route('admin.audios.update', $audio->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('konselor.audios.update', $audio->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

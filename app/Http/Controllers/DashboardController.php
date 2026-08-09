@@ -94,6 +94,16 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user(); // Mengambil user yang sedang login
+        
+        // Redirect Admin/Konselor ke dashboard masing-masing
+        if ($user && $user->role) {
+            if ($user->role->name === 'konselor') {
+                return redirect()->route('konselor.dashboard');
+            } elseif (in_array($user->role->name, ['admin', 'super_admin'])) {
+                return redirect()->route('admin.dashboard');
+            }
+        }
+
         $userId = $user->id;
 
         // Biarkan ini, karena untuk fitur 'Top Post' yang berbeda

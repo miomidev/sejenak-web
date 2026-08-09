@@ -15,6 +15,11 @@ class Audio extends Model
         'title',
         'file_path',
         'category',
+        'is_premium',
+    ];
+
+    protected $casts = [
+        'is_premium' => 'boolean',
     ];
 
     public function users()
