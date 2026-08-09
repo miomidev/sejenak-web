@@ -63,7 +63,7 @@ class TransactionController extends Controller
                 'Content-Type' => 'application/json',
             ])->post(config('miomipay.base_url') . '/trx', [
                 'order_id' => $orderId,
-                'amount' => $request->price,
+                'amount' => (int) $request->price,
                 'link_name' => $request->package_name . ' - ' . $request->token_amount . ' Token',
                 'webhook_url' => 'https://sejenak.miomidev.com/api/miomipay/webhook',
             ]);
@@ -72,7 +72,7 @@ class TransactionController extends Controller
                 $data = $response->json();
 
                 // Simpan payment URL ke snap_token (reuse kolom yang ada)
-                $paymentUrl = $data['payment_url'] ?? $data['url'] ?? null;
+                $paymentUrl = $data['paylink'] ?? $data['payment_url'] ?? $data['url'] ?? null;
                 if ($paymentUrl) {
                     $transaction->update(['snap_token' => $paymentUrl]);
                 }
