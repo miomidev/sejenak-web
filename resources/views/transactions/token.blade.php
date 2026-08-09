@@ -13,8 +13,11 @@
 <div class="flex flex-col w-full h-full overflow-y-auto">
     <!-- Header Section -->
     <div class="text-center pt-6 pb-4 px-4">
-        <h1 class="text-2xl md:text-3xl font-bold font-exo2 text-dark">Pilih Paket Token</h1>
-        <p class="text-sm text-gray-500 mt-1">Temukan paket yang paling cocok untuk kebutuhan curhatmu!</p>
+        <div class="flex items-center justify-center gap-2 mb-1">
+            <i class="fas fa-coins text-yellow-500 text-2xl md:text-3xl"></i>
+            <h1 class="text-2xl md:text-3xl font-bold font-exo2 text-dark">Pilih Paket Token</h1>
+        </div>
+        <p class="text-sm text-gray-500">Temukan paket yang paling cocok untuk kebutuhan curhatmu!</p>
     </div>
 
     <!-- Saldo Saat Ini -->
@@ -92,7 +95,7 @@
     <div class="mx-4 md:mx-8 mb-6">
         <div class="bg-secondary/30 border border-dark/20 rounded-playful-md p-3 flex items-start gap-3">
             <i class="fas fa-info-circle text-dark mt-0.5 flex-shrink-0"></i>
-            <p class="text-xs text-gray-600">Token digunakan untuk sesi konseling dengan konselor profesional. Pembayaran diproses melalui Midtrans dan aman. Token tidak dapat dikembalikan setelah digunakan.</p>
+            <p class="text-xs text-gray-600">Token digunakan untuk sesi konseling dengan konselor profesional. Pembayaran diproses melalui MiomiPay dan aman. Token tidak dapat dikembalikan setelah digunakan.</p>
         </div>
     </div>
 </div>
