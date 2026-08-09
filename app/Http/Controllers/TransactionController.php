@@ -34,6 +34,7 @@ class TransactionController extends Controller
 
     /**
      * Handle user request to checkout a token package via MiomiPay.
+     * Returns QRIS data for inline modal display.
      */
     public function checkout(Request $request)
     {
@@ -71,17 +72,28 @@ class TransactionController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
 
-                // Simpan payment URL ke snap_token (reuse kolom yang ada)
+                Log::info('MiomiPay checkout response', $data);
+
+                // Ambil data QRIS dari response
                 $paymentUrl = $data['paylink'] ?? $data['payment_url'] ?? $data['url'] ?? null;
+                $qrisUrl    = $data['qris_url'] ?? $data['qr_url'] ?? $data['qr_image'] ?? $data['qris'] ?? null;
+                $expiredAt  = $data['expired_at'] ?? $data['expiry_time'] ?? null;
+
+                // Simpan payment URL ke snap_token
                 if ($paymentUrl) {
                     $transaction->update(['snap_token' => $paymentUrl]);
                 }
 
                 return response()->json([
-                    'success' => true,
+                    'success'     => true,
+                    'order_id'    => $orderId,
                     'payment_url' => $paymentUrl,
-                    'order_id' => $orderId,
-                    'data' => $data,
+                    'qris_url'    => $qrisUrl,
+                    'expired_at'  => $expiredAt,
+                    'amount'      => (int) $request->price,
+                    'package_name'=> $request->package_name,
+                    'token_amount'=> (int) $request->token_amount,
+                    'data'        => $data,
                 ]);
             } else {
                 Log::error('MiomiPay API Error', [
@@ -94,6 +106,28 @@ class TransactionController extends Controller
             Log::error('MiomiPay Exception', ['message' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Check transaction status for polling.
+     */
+    public function checkStatus(Request $request)
+    {
+        $request->validate(['order_id' => 'required|string']);
+
+        $transaction = Transaction::where('order_id', $request->order_id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$transaction) {
+            return response()->json(['error' => 'Transaksi tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'status'       => $transaction->status,
+            'order_id'     => $transaction->order_id,
+            'token_amount' => $transaction->token_amount,
+        ]);
     }
 
     /**
