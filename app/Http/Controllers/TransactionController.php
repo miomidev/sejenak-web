@@ -6,50 +6,37 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TransactionController extends Controller
 {
-    /**
-     * Set up Midtrans configuration.
-     */
-    public function __construct()
-    {
-        // Set Midtrans configuration
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
-    }
-
     /**
      * Show token package selection page.
      */
     public function showTokenPage()
     {
         $packages = [
-            ['icon' => 'fas fa-seedling', 'name' => 'Paket Basic', 'tokens' => 50, 'price' => 10000, 'color' => 'primary'],
-            ['icon' => 'fas fa-piggy-bank', 'name' => 'Paket Hemat', 'tokens' => 120, 'price' => 20000, 'color' => 'secondary'],
-            ['icon' => 'fas fa-gift', 'name' => 'Paket Medium', 'tokens' => 250, 'price' => 40000, 'color' => 'orange'],
-            ['icon' => 'fas fa-star', 'name' => 'Paket Mega', 'tokens' => 550, 'price' => 80000, 'color' => 'primary'],
-            ['icon' => 'fas fa-fire', 'name' => 'Paket Super', 'tokens' => 1200, 'price' => 150000, 'color' => 'secondary'],
-            ['icon' => 'fas fa-rocket', 'name' => 'Paket Ultimate', 'tokens' => 3000, 'price' => 300000, 'color' => 'orange'],
-            ['icon' => 'fas fa-heart', 'name' => 'Paket Keluarga', 'tokens' => 5000, 'price' => 450000, 'color' => 'primary'],
-            ['icon' => 'fas fa-calendar-alt', 'name' => 'Paket Tahunan', 'tokens' => 10000, 'price' => 600000, 'color' => 'secondary'],
-            ['icon' => 'fas fa-infinity', 'name' => 'Paket Sejenak', 'tokens' => 25000, 'price' => 1500000, 'color' => 'orange'],
-
-            // ...tambahkan semua paket lainnya di sini
+            ['icon' => 'fas fa-seedling', 'name' => 'Paket Basic', 'tokens' => 50, 'price' => 2500, 'color' => 'primary'],
+            ['icon' => 'fas fa-piggy-bank', 'name' => 'Paket Hemat', 'tokens' => 120, 'price' => 6000, 'color' => 'secondary'],
+            ['icon' => 'fas fa-gift', 'name' => 'Paket Medium', 'tokens' => 250, 'price' => 12500, 'color' => 'orange'],
+            ['icon' => 'fas fa-star', 'name' => 'Paket Mega', 'tokens' => 550, 'price' => 27500, 'color' => 'primary'],
+            ['icon' => 'fas fa-fire', 'name' => 'Paket Super', 'tokens' => 1200, 'price' => 60000, 'color' => 'secondary'],
+            ['icon' => 'fas fa-rocket', 'name' => 'Paket Ultimate', 'tokens' => 3000, 'price' => 150000, 'color' => 'orange'],
+            ['icon' => 'fas fa-heart', 'name' => 'Paket Keluarga', 'tokens' => 5000, 'price' => 250000, 'color' => 'primary'],
+            ['icon' => 'fas fa-calendar-alt', 'name' => 'Paket Tahunan', 'tokens' => 10000, 'price' => 500000, 'color' => 'secondary'],
+            ['icon' => 'fas fa-infinity', 'name' => 'Paket Sejenak', 'tokens' => 25000, 'price' => 1250000, 'color' => 'orange'],
         ];
 
         return view('transactions.token', compact('packages'));
     }
 
     /**
-     * Handle user request to checkout a token package.
+     * Handle user request to checkout a token package via MiomiPay.
      */
     public function checkout(Request $request)
     {
-        // Validasi request dari frontend
         $request->validate([
             'package_name' => 'required|string',
             'token_amount' => 'required|integer',
@@ -57,10 +44,9 @@ class TransactionController extends Controller
         ]);
 
         // Buat Order ID yang unik
-        $orderId = Str::uuid();
+        $orderId = 'SEJENAK-' . strtoupper(Str::random(10)) . '-' . time();
 
-        // Buat transaksi baru di database dengan status pending
-        // Pastikan model Transaction Anda memiliki 'order_id', 'package_name', 'token_amount', 'price', 'status' di $fillable
+        // Simpan transaksi ke database dengan status pending
         $transaction = Transaction::create([
             'order_id' => $orderId,
             'user_id' => Auth::id(),
@@ -70,92 +56,93 @@ class TransactionController extends Controller
             'status' => 'pending',
         ]);
 
-        // Siapkan parameter untuk Midtrans Snap
-        $params = [
-            'transaction_details' => [
-                'order_id' => $transaction->order_id,
-                'gross_amount' => $transaction->price,
-            ],
-            'item_details' => [[
-                'id' => $request->token_amount . '_tokens',
-                'price' => $transaction->price,
-                'quantity' => 1,
-                'name' => $transaction->package_name . ' (' . $transaction->token_amount . ' Tokens)',
-            ]],
-            'customer_details' => [
-                'first_name' => Auth::user()->name,
-                'email' => Auth::user()->email,
-            ],
-        ];
-
+        // Kirim request ke MiomiPay API
         try {
-            // Dapatkan Snap Token dari Midtrans
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-            
-            // Simpan snap_token ke database
-            $transaction->snap_token = $snapToken;
-            $transaction->save();
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('miomipay.api_key'),
+                'Content-Type' => 'application/json',
+            ])->post(config('miomipay.base_url') . '/trx', [
+                'order_id' => $orderId,
+                'amount' => (int) $request->price,
+                'link_name' => $request->package_name . ' - ' . $request->token_amount . ' Token',
+                'webhook_url' => 'https://sejenak.miomidev.com/api/miomipay/webhook',
+            ]);
 
-            // Kembalikan snapToken ke frontend
-            return response()->json(['snapToken' => $snapToken]);
+            if ($response->successful()) {
+                $data = $response->json();
 
+                // Simpan payment URL ke snap_token (reuse kolom yang ada)
+                $paymentUrl = $data['paylink'] ?? $data['payment_url'] ?? $data['url'] ?? null;
+                if ($paymentUrl) {
+                    $transaction->update(['snap_token' => $paymentUrl]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'payment_url' => $paymentUrl,
+                    'order_id' => $orderId,
+                    'data' => $data,
+                ]);
+            } else {
+                Log::error('MiomiPay API Error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                return response()->json(['error' => 'Gagal membuat transaksi MiomiPay: ' . $response->body()], 500);
+            }
         } catch (\Exception $e) {
+            Log::error('MiomiPay Exception', ['message' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     /**
-     * Handle Midtrans payment notification callback.
+     * Handle MiomiPay webhook notification.
      */
-    public function callback(Request $request)
+    public function miomipayWebhook(Request $request)
     {
-        // 1. Ambil Server Key dari config
-        $serverKey = config('midtrans.server_key');
+        // Ambil payload mentah
+        $payload = $request->getContent();
 
-        // 2. Buat hash signature untuk validasi
-        // Formula: sha512(order_id + status_code + gross_amount + server_key)
-        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+        // Validasi signature HMAC SHA-256
+        $signatureHeader = $request->header('X-Signature', '');
+        $secretKey = config('miomipay.webhook_secret');
+        $calculatedSignature = hash_hmac('sha256', $payload, $secretKey);
 
-        // 3. Validasi signature dari Midtrans
-        // Ini PENTING untuk keamanan, agar tidak ada notifikasi palsu
-        if ($hashed == $request->signature_key) {
-            
-            // 4. Cari transaksi di database berdasarkan order_id
-            $transaction = Transaction::where('order_id', $request->order_id)->first();
+        if (!hash_equals($calculatedSignature, $signatureHeader)) {
+            Log::warning('MiomiPay Webhook: Invalid signature');
+            return response()->json(['error' => 'Invalid signature'], 403);
+        }
 
-            // Jika transaksi ditemukan
-            if ($transaction) {
-                // 5. Periksa status pembayaran dari Midtrans
-                // 'capture' atau 'settlement' berarti pembayaran berhasil
-                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
-                    
-                    // 6. Pastikan kita hanya memproses transaksi yang statusnya masih 'pending'
-                    // Ini untuk mencegah penambahan token berulang kali jika Midtrans mengirim notifikasi lebih dari sekali
-                    if ($transaction->status == 'pending') {
-                        
-                        // Update status transaksi di database menjadi 'success'
-                        $transaction->update(['status' => 'success']);
-                        
-                        // Cari user yang memiliki transaksi ini
-                        $user = User::find($transaction->user_id);
-                        
-                        // Tambahkan token ke saldo user
-                        // Pastikan nama kolom di tabel 'users' adalah 'tokens_balance'
-                        $user->increment('tokens_balance', $transaction->token_amount);
-                    }
-                } 
-                // Jika pembayaran kadaluwarsa
-                elseif ($request->transaction_status == 'expire') {
-                    $transaction->update(['status' => 'expired']);
-                } 
-                // Jika pembayaran ditolak atau dibatalkan
-                elseif ($request->transaction_status == 'deny' || $request->transaction_status == 'cancel') {
-                    $transaction->update(['status' => 'failed']);
+        $data = $request->json()->all();
+
+        Log::info('MiomiPay Webhook received', $data);
+
+        $orderId = $data['order_id'] ?? null;
+        $transactionStatus = $data['transaction_status'] ?? null;
+
+        if (!$orderId) {
+            return response()->json(['status' => 'ok']);
+        }
+
+        $transaction = Transaction::where('order_id', $orderId)->first();
+
+        if ($transaction && $transaction->status === 'pending') {
+            if ($transactionStatus === 'settlement' || $transactionStatus === 'capture') {
+                $transaction->update(['status' => 'success']);
+
+                $user = User::find($transaction->user_id);
+                if ($user) {
+                    $user->increment('tokens_balance', $transaction->token_amount);
+                    Log::info("Token added: user {$user->id} +{$transaction->token_amount} tokens");
                 }
+            } elseif ($transactionStatus === 'expire') {
+                $transaction->update(['status' => 'expired']);
+            } elseif (in_array($transactionStatus, ['deny', 'cancel', 'failure'])) {
+                $transaction->update(['status' => 'failed']);
             }
         }
 
-        // 7. Beri respons 'OK' ke Midtrans agar mereka tahu notifikasi sudah diterima
         return response()->json(['status' => 'ok']);
     }
 
@@ -183,9 +170,29 @@ class TransactionController extends Controller
         return view('transactions.failed');
     }
 
+    /**
+     * Menampilkan riwayat transaksi pengguna yang sedang login.
+     */
+    public function userHistory()
+    {
+        $userId = Auth::id();
+
+        // Lazy Expiration: Update transaksi pending yang sudah lebih dari 60 menit menjadi expired
+        Transaction::where('user_id', $userId)
+            ->where('status', 'pending')
+            ->where('created_at', '<', now()->subMinutes(60))
+            ->update(['status' => 'expired']);
+
+        // Ambil riwayat transaksi, terbaru di atas
+        $transactions = Transaction::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('transactions.history', compact('transactions'));
+    }
+
     public function index()
     {
-        // Ganti 'amount' ke 'token_amount' jika Anda sudah mengubah skema DB
         $transactions = Transaction::with('user')->orderBy('created_at', 'desc')->paginate(15);
         return view('transactions.index', compact('transactions'));
     }
@@ -200,12 +207,11 @@ class TransactionController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'amount' => 'required|integer', // Sebaiknya ganti ini menjadi 'token_amount'
+            'amount' => 'required|integer',
             'type' => 'required|in:topup,usage',
             'description' => 'nullable|string',
         ]);
-        
-        // Sesuaikan dengan skema database baru
+
         Transaction::create([
             'user_id' => $validated['user_id'],
             'token_amount' => $validated['amount'],
@@ -213,7 +219,6 @@ class TransactionController extends Controller
             'description' => $validated['description'],
         ]);
 
-        // Update user's token balance
         $user = User::find($validated['user_id']);
         if ($validated['type'] === 'topup') {
             $user->increment('tokens_balance', $validated['amount']);
@@ -238,7 +243,6 @@ class TransactionController extends Controller
 
     public function update(Request $request, Transaction $transaction)
     {
-        // Sebaiknya sesuaikan validasi dan logika ini dengan skema database baru Anda
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'amount' => 'required|integer',
@@ -246,7 +250,6 @@ class TransactionController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // Revert previous transaction effect
         $oldUser = User::find($transaction->user_id);
         if ($transaction->type === 'topup') {
             $oldUser->decrement('tokens_balance', $transaction->amount);
@@ -256,7 +259,6 @@ class TransactionController extends Controller
 
         $transaction->update($validated);
 
-        // Apply new transaction effect
         $user = User::find($validated['user_id']);
         if ($validated['type'] === 'topup') {
             $user->increment('tokens_balance', $validated['amount']);
@@ -269,7 +271,6 @@ class TransactionController extends Controller
 
     public function destroy(Transaction $transaction)
     {
-        // Revert transaction effect before deletion
         $user = User::find($transaction->user_id);
         if ($transaction->type === 'topup') {
             $user->decrement('tokens_balance', $transaction->amount);

@@ -41,7 +41,7 @@ Route::post('/googleAuth',[GoogleAuthController::class,'login']);
 Route::post('/verify-code', [AuthController::class, 'verify']);
 Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
 
-Route::post('/midtrans/callback', [TransactionController::class, 'callback']);
+Route::post('/miomipay/webhook', [TransactionController::class, 'miomipayWebhook']);
 Route::middleware('auth:api')->group(function () {
     Route::get('profile', [ProfileController::class, 'show']);
     Route::get('me', [AuthController::class, 'profile']);

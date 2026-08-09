@@ -17,47 +17,59 @@ class KonselorController extends Controller
      */
     public function dashboard()
     {
-        // 1. DATA DUMMY UNTUK KARTU STATISTIK
+        $konselorId = Auth::id();
+
+        // 1. DATA ASLI UNTUK KARTU STATISTIK
+        $activeClients = \App\Models\Session::where('konselor_id', $konselorId)
+                                            ->where('status', 'ongoing')
+                                            ->distinct('user_id')
+                                            ->count('user_id');
+
+        $sessionsThisWeek = \App\Models\Session::where('konselor_id', $konselorId)
+                                               ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                                               ->count();
+
+        $completedSessions = \App\Models\Session::where('konselor_id', $konselorId)
+                                                ->where('status', 'closed')
+                                                ->count();
+
         $stats = [
-            'active_clients' => 8,
-            'sessions_this_week' => 3,
-            'new_messages' => 2,
-            'completed_sessions' => 47,
+            'active_clients' => $activeClients,
+            'sessions_this_week' => $sessionsThisWeek,
+            'new_messages' => 0, // Bisa diintegrasikan dengan tabel pesan jika ada
+            'completed_sessions' => $completedSessions,
         ];
 
-        // 2. DATA DUMMY UNTUK JADWAL SESI MENDATANG
-        $upcomingSessions = new Collection([
-            (object)[
-                'user' => (object)['name' => 'Budi Santoso'],
-                'schedule_time' => Carbon::now()->addDays(1)->setTime(10, 0),
-            ],
-            (object)[
-                'user' => (object)['name' => 'Citra Lestari'],
-                'schedule_time' => Carbon::now()->addDays(2)->setTime(14, 30),
-            ],
-            (object)[
-                'user' => (object)['name' => 'Agus Wijaya'],
-                'schedule_time' => Carbon::now()->addDays(4)->setTime(11, 0),
-            ],
-        ]);
+        // 2. DATA ASLI UNTUK SESI AKTIF SAAT INI (Menggantikan 'Jadwal Mendatang' karena tabel sesi menggunakan 'ongoing')
+        $upcomingSessions = \App\Models\Session::with('user')
+                                               ->where('konselor_id', $konselorId)
+                                               ->where('status', 'ongoing')
+                                               ->orderBy('created_at', 'desc')
+                                               ->take(5)
+                                               ->get()
+                                               ->map(function($session) {
+                                                    return (object)[
+                                                        'user' => (object)['name' => $session->user->name ?? 'Klien'],
+                                                        'schedule_time' => $session->created_at, // Menggunakan waktu dibuat sebagai referensi waktu
+                                                        'status' => 'Berjalan'
+                                                    ];
+                                               });
 
-        // 3. DATA DUMMY UNTUK AKTIVITAS TERBARU
-        $recentActivities = new Collection([
-            (object)[
-                'description' => 'Sesi dengan Budi Santoso berhasil dijadwalkan ulang.',
-                'created_at' => Carbon::now()->subMinutes(30),
-            ],
-            (object)[
-                'description' => 'Anda menerima pesan baru dari Citra Lestari.',
-                'created_at' => Carbon::now()->subHours(2),
-            ],
-            (object)[
-                'description' => 'Laporan sesi untuk Agus Wijaya telah selesai.',
-                'created_at' => Carbon::now()->subHours(5),
-            ],
-        ]);
+        // 3. DATA ASLI UNTUK AKTIVITAS TERBARU (Diambil dari sesi terakhir diperbarui/ditutup)
+        $recentActivities = \App\Models\Session::with('user')
+                                               ->where('konselor_id', $konselorId)
+                                               ->orderBy('updated_at', 'desc')
+                                               ->take(3)
+                                               ->get()
+                                               ->map(function($session) {
+                                                    $action = $session->status == 'closed' ? 'telah selesai' : 'dimulai';
+                                                    return (object)[
+                                                        'description' => 'Sesi dengan ' . ($session->user->name ?? 'Klien') . ' ' . $action . '.',
+                                                        'created_at' => $session->updated_at,
+                                                    ];
+                                               });
         
-        // 4. Mengirim semua data dummy ke view
+        // 4. Mengirim semua data ke view
         return view('konselor.index', compact('stats', 'upcomingSessions', 'recentActivities'));
     }
 

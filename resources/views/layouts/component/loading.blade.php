@@ -30,23 +30,19 @@
 </section>
 
 <script>
-(function() {
-  function hideLoading() {
-    const loadingEl = document.getElementById("loading");
-    if (!loadingEl) return;
-    loadingEl.classList.add("fade-out");
-    loadingEl.style.pointerEvents = "none";
-    setTimeout(() => {
-      loadingEl.style.display = "none";
-    }, 400);
-  }
+window.addEventListener("load", () => {
+  const loadingEl = document.getElementById("loading");
+  loadingEl.style.opacity = "0";
+  loadingEl.style.transition = "opacity 0.8s ease";
 
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    hideLoading();
-  } else {
-    window.addEventListener("load", hideLoading);
-    document.addEventListener("DOMContentLoaded", hideLoading);
-    setTimeout(hideLoading, 1000);
-  }
-})();
+  setTimeout(() => {
+    loadingEl.style.display = "none";
+    document.body.classList.add("loaded");
+    // Tampilkan floating chat setelah loading selesai
+    const floatingChat = document.getElementById("floating-chat-container");
+    if (floatingChat) {
+      floatingChat.classList.add("visible");
+    }
+  }, 800);
+});
 </script>

@@ -104,12 +104,22 @@
 
                     <div class="mb-4">
                         <label for="password" class="block text-sm font-medium text-dark mb-1">Kata sandi</label>
-                        <input id="password" class="block w-full rounded-playful border-2 border-dark shadow-offset-dark p-2 bg-logininput placeholder-placeholder placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" type="password" name="password" required autocomplete="new-password" placeholder="Masukkan Kata Sandi" />
+                        <div class="relative">
+                            <input id="password" class="block w-full rounded-playful border-2 border-dark shadow-offset-dark p-2 pr-10 bg-logininput placeholder-placeholder placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" type="password" name="password" required autocomplete="new-password" placeholder="Masukkan Kata Sandi" />
+                            <button type="button" onclick="togglePassword('password', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-dark">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="mb-4">
                         <label for="password_confirmation" class="block text-sm font-medium text-dark mb-1">Konfirmasi Kata Sandi</label>
-                        <input id="password_confirmation" class="block w-full rounded-playful border-2 border-dark shadow-offset-dark p-2 bg-logininput placeholder-placeholder placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi Kata Sandi" />
+                        <div class="relative">
+                            <input id="password_confirmation" class="block w-full rounded-playful border-2 border-dark shadow-offset-dark p-2 pr-10 bg-logininput placeholder-placeholder placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Konfirmasi Kata Sandi" />
+                            <button type="button" onclick="togglePassword('password_confirmation', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-dark">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex justify-center mt-6">
@@ -130,4 +140,19 @@
         </div>
     </div>
 </body>
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </html>

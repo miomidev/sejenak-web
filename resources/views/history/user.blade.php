@@ -1,224 +1,363 @@
-@extends('layouts.app')
-
-@section('title', 'Riwayat & Rekap Aktivitas')
-
-@section('style')
-<style>
-    .calendar-cell {
-        @apply min-h-[52px] p-1.5 border-2 border-dark bg-white rounded-playful-sm flex flex-col justify-between items-center transition-all cursor-pointer hover:bg-secondary/30 hover:border-black shadow-[2px_2px_0_#080330];
-    }
-    .calendar-cell.today {
-        @apply bg-primary/30 border-black font-extrabold shadow-none translate-x-0.5 translate-y-0.5;
-    }
-    .activity-badge {
-        @apply w-2 h-2 rounded-full border border-black inline-block;
-    }
-</style>
-@endsection
+    @extends('layouts.app')
 
 @section('content')
-<div class="w-full h-full flex flex-col gap-6 bg-background p-4 md:p-8 font-main max-w-7xl mx-auto overflow-y-auto">
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 border-2 border-dark rounded-playful-lg shadow-border-offset">
-        <div>
-            <span class="px-3 py-1 rounded-full bg-primary text-black font-extrabold text-xs uppercase border-2 border-dark shadow-[2px_2px_0_#080330]">
-                🚀 REKAP SELF-CARE
-            </span>
-            <h1 class="text-2xl md:text-4xl font-extrabold text-dark mt-2">Riwayat & Rekap Aktivitas</h1>
-            <p class="text-sm md:text-base text-gray-600 font-semibold mt-1">Pantau jejak jurnal, postingan komunitas, grafik suasana hati (mood), dan konsistensi harianmu.</p>
-        </div>
-        <div class="flex items-center gap-3 bg-secondary/30 p-3 border-2 border-dark rounded-playful-md whitespace-nowrap shadow-[2px_2px_0_#080330]">
-            <span class="text-3xl">🔥</span>
-            <div>
-                <p class="text-xs font-bold text-gray-600">Streak Berturut-turut</p>
-                <p class="text-lg font-extrabold text-dark">{{ $streakCount }} Hari Aktif</p>
-            </div>
-        </div>
-    </div>
+<div class="w-full min-h-screen h-full flex flex-col md:flex-row overflow-y-auto p-0 justify-center items-center">
 
-    <!-- Stat Cards Top Row -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
-        <div class="p-5 bg-white border-2 border-dark rounded-playful-lg text-center shadow-border-offset hover:-translate-y-1 transition-all">
-            <span class="text-3xl mb-1 block">📝</span>
-            <p class="text-3xl md:text-4xl font-black text-primary">{{ $journalCount }}</p>
-            <p class="text-sm font-extrabold text-dark mt-1">Jurnal Ditulis</p>
-        </div>
-        <div class="p-5 bg-white border-2 border-dark rounded-playful-lg text-center shadow-border-offset hover:-translate-y-1 transition-all">
-            <span class="text-3xl mb-1 block">💬</span>
-            <p class="text-3xl md:text-4xl font-black text-secondary">{{ $postCount }}</p>
-            <p class="text-sm font-extrabold text-dark mt-1">Post Komunitas</p>
-        </div>
-        <div class="p-5 bg-white border-2 border-dark rounded-playful-lg text-center shadow-border-offset hover:-translate-y-1 transition-all">
-            <span class="text-3xl mb-1 block">⚡</span>
-            <p class="text-3xl md:text-4xl font-black text-dark">{{ $streakCount }}</p>
-            <p class="text-sm font-extrabold text-dark mt-1">Hari Berturut-turut</p>
-        </div>
-    </div>
+    <div class="h-3/4 calendar-section  w-full lg:w-1/2 flex flex-col items-center gap-6">
+        <div class="calendar w-full max-w-2xl">
 
-    <!-- Main Content Grid: Kalender & Grafik Mood -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full items-start">
-        
-        <!-- Kalender Aktivitas Bulanan (Left 7 Cols) -->
-        <div class="lg:col-span-7 bg-white border-2 border-dark rounded-playful-lg p-6 shadow-border-offset flex flex-col justify-between">
-            <div class="flex justify-between items-center mb-4 pb-3 border-b-2 border-dark">
-                <a href="{{ route('user.history') }}?month={{ $month == 1 ? 12 : $month - 1 }}&year={{ $month == 1 ? $year - 1 : $year }}" class="w-9 h-9 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 border-2 border-dark font-extrabold text-dark shadow-[2px_2px_0_#080330] transition-all" title="Bulan Sebelumnya">
-                    &larr;
-                </a>
-                <h3 class="text-xl font-extrabold text-dark">
-                    {{ \Carbon\Carbon::create($year, $month, 1)->translatedFormat('F Y') }}
-                </h3>
-                <a href="{{ route('user.history') }}?month={{ $month == 12 ? 1 : $month + 1 }}&year={{ $month == 12 ? $year + 1 : $year }}" class="w-9 h-9 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 border-2 border-dark font-extrabold text-dark shadow-[2px_2px_0_#080330] transition-all" title="Bulan Berikutnya">
-                    &rarr;
-                </a>
+            <div class=" calendar-header flex justify-around items-center p-4 bg-primary rounded-t-playful-lg border-x-2 border-t-2 border-dark shadow-border-offset">
+                <button id="prevMonth" class="bg-secondary border-2 border-black text-white rounded-full w-12 h-12 flex items-center justify-center text-3xl shadow-border-offset transition-all hover:bg-orange hover:rotate-[-8deg] hover:scale-110 active:shadow-[1px_2px_0px_#1A1A40] active:translate-x-0.5 active:translate-y-0.5">
+                    <span class="-mt-1">⟨</span>
+                </button>
+                <div class="month-year flex flex-col items-center cursor-pointer">
+                    <span id="monthName" class="drop-shadow-md tracking-wide text-white text-2xl font-bold font-exo2">Januari</span>
+                    <span id="yearDisplay" class="text-sm font-medium text-white font-lexend">2024</span>
+                </div>
+                <button id="nextMonth" class="bg-secondary border-2 border-black text-white rounded-full w-12 h-12 flex items-center justify-center text-3xl shadow-border-offset transition-all hover:bg-orange hover:rotate-[8deg] hover:scale-110 active:shadow-[1px_2px_0px_#1A1A40] active:translate-x-0.5 active:translate-y-0.5">
+                    <span class="-mt-1">⟩</span>
+                </button>
             </div>
 
-            <!-- Nama Hari -->
-            <div class="grid grid-cols-7 gap-1.5 text-center font-extrabold text-xs text-dark/70 uppercase mb-2">
-                <span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
+            <div class=" bg-white p-4 rounded-b-playful-lg border-2 border-black shadow-border-offset">
+                <div class="grid grid-cols-7 gap-2 text-center mb-2">
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Sen</div>
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Sel</div>
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Rab</div>
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Kam</div>
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Jum</div>
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Sab</div>
+                    <div class="font-bold text-dark font-lexend text-sm md:text-base">Min</div>
+                </div>
+                <div id="calendarBody" class="grid grid-cols-7 gap-2">
+                </div>
             </div>
 
-            <!-- Grid Tanggal -->
-            <div id="calendar-grid" class="grid grid-cols-7 gap-1.5">
-                @php
-                    $firstDayOfMonth = \Carbon\Carbon::create($year, $month, 1)->dayOfWeek;
-                    $daysInMonth = \Carbon\Carbon::create($year, $month, 1)->daysInMonth;
-                    $today = \Carbon\Carbon::today();
-
-                    $postDays = $calendarData['postDays'] ?? [];
-                    $journalDays = $calendarData['journalDays'] ?? [];
-                    $exerciseDays = $calendarData['exerciseDays'] ?? [];
-                    $moodDays = $calendarData['moodDays'] ?? [];
-                @endphp
-
-                <!-- Cell kosong sebelum tanggal 1 -->
-                @for ($i = 0; $i < $firstDayOfMonth; $i++)
-                    <div class="min-h-[52px]"></div>
-                @endfor
-
-                <!-- Render Setiap Tanggal -->
-                @for ($day = 1; $day <= $daysInMonth; $day++)
-                    @php
-                        $isToday = ($today->day == $day && $today->month == $month && $today->year == $year);
-                        $hasPost = in_array($day, $postDays);
-                        $hasJournal = in_array($day, $journalDays);
-                        $hasExercise = in_array($day, $exerciseDays);
-                        $dayMood = $moodDays[$day] ?? null;
-
-                        $moodEmojis = [
-                            'happy' => '😊', 'relaxed' => '😌', 'calm' => '😐', 
-                            'sad' => '😢', 'angry' => '😡', 'energetic' => '💪',
-                            'anxious' => '😰', 'stressed' => '😣', 'tired' => '😴'
-                        ];
-                    @endphp
-
-                    <div class="calendar-cell {{ $isToday ? 'today' : '' }}" onclick="showDayDetails({{ $day }}, '{{ $dayMood }}', {{ $hasJournal ? 'true' : 'false' }}, {{ $hasPost ? 'true' : 'false' }}, {{ $hasExercise ? 'true' : 'false' }})">
-                        <span class="text-xs font-extrabold text-dark">{{ $day }}</span>
-                        
-                        <!-- Emoji Mood atau Indikator Dot -->
-                        <div class="flex items-center gap-1 my-0.5">
-                            @if($dayMood && isset($moodEmojis[$dayMood]))
-                                <span class="text-sm">{{ $moodEmojis[$dayMood] }}</span>
-                            @endif
-                        </div>
-
-                        <!-- Dots Aktivitas -->
-                        <div class="flex gap-1 items-center">
-                            @if($hasJournal) <span class="activity-badge bg-primary" title="Jurnal"></span> @endif
-                            @if($hasPost) <span class="activity-badge bg-secondary" title="Post"></span> @endif
-                            @if($hasExercise) <span class="activity-badge bg-purple-400" title="Exercise"></span> @endif
+        </div>
+        <div class="h-1/4 challenge-progress w-full max-w-2xl p-4 rounded-playful-lg border-2 border-dark bg-white shadow-border-offset">
+            
+                <!-- Tantangan 2 -->
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <p class="font-medium font-lexend text-dark">7 Hari Beruntun Mood Tracker</p>
+                        <div class="w-full bg-gray-200 rounded-full h-3 mt-1">
+                            <div class="bg-green-500 h-3 rounded-full" style="width: 100%;"></div>
                         </div>
                     </div>
-                @endfor
+                    <span class="text-sm font-bold font-exo2 text-dark">7/7</span>
+                </div>
+        </div>
+
+
+    </div>
+
+    <div class="right-section w-full lg:w-1/2 flex flex-col items-center gap-8">
+
+        <div class="h-1/2 stats-container w-full max-w-2xl p-6 rounded-playful-lg border-2 border-dark bg-primary shadow-border-offset">
+            <h2 class="font-bold text-2xl md:text-3xl text-white mb-4 text-center font-exo2 text-shadow-h1">Aktivitasmu 🚀</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="stat-card p-4 rounded-playful-lg border-2 border-dark bg-white text-center shadow-border-offset">
+                    <p class="text-4xl font-bold text-orange font-exo2" id="postCount">{{ $postCount }}</p>
+                    <p class="text-sm md:text-base text-dark font-medium mt-1 font-lexend">Postingan Dibuat</p>
+                </div>
+                <div class="stat-card p-4 rounded-playful-lg border-2 border-dark bg-white text-center shadow-border-offset">
+                    <p class="text-4xl font-bold text-secondary font-exo2" id="journalCount">{{ $journalCount }}</p>
+                    <p class="text-sm md:text-base text-dark font-medium mt-1 font-lexend">Jurnal Ditulis</p>
+                </div>
+                <div class="stat-card p-4 rounded-playful-lg border-2 border-dark bg-white text-center shadow-border-offset">
+                    <p class="text-4xl font-bold text-primary font-exo2" id="streakCount">{{ $streakCount }}</p>
+                    <p class="text-sm md:text-base text-dark font-medium mt-1 font-lexend">Hari Berturut-turut</p>
+                </div>
             </div>
 
-            <!-- Legend Indikator -->
-            <div class="flex flex-wrap items-center justify-around gap-3 mt-5 pt-3 border-t-2 border-dark/10 text-xs font-extrabold text-dark/80">
-                <div class="flex items-center gap-1.5"><span class="activity-badge bg-primary"></span> Jurnal</div>
-                <div class="flex items-center gap-1.5"><span class="activity-badge bg-secondary"></span> Post Komunitas</div>
-                <div class="flex items-center gap-1.5"><span class="activity-badge bg-purple-400"></span> Exercise</div>
-                <div class="flex items-center gap-1.5"><span>😊</span> Record Mood</div>
+        </div>
+
+        <div class="h-1/2 mood-container w-full max-w-2xl p-6 rounded-playful-lg border-2 border-dark bg-secondary shadow-border-offset">
+            <h2 class="font-bold text-2xl md:text-3xl text-white mb-4 text-center font-exo2 text-shadow-h1">Trafik Mood 🌈</h2>
+            <div class="h-48 border-2 border-dark rounded-playful-lg bg-white p-4 shadow-border-offset">
+                <canvas id="moodChart"></canvas>
+            </div>
+            <div id="moodSummaryIcons" class="flex items-center justify-around flex-wrap gap-4 py-2">
             </div>
         </div>
 
-        <!-- Trafik Mood 7 Hari Terakhir & Summary (Right 5 Cols) -->
-        <div class="lg:col-span-5 flex flex-col gap-6 w-full">
-            <!-- Mood Chart Box -->
-            <div class="bg-white border-2 border-dark rounded-playful-lg p-6 shadow-border-offset">
-                <div class="flex justify-between items-center mb-4 pb-3 border-b-2 border-dark">
-                    <h3 class="text-lg font-extrabold text-dark flex items-center gap-2">
-                        <span>🌈</span> Trafik Mood 7 Hari
-                    </h3>
-                    <span class="text-xs font-extrabold bg-secondary border border-dark px-2.5 py-1 rounded-playful-sm">Mingguan</span>
-                </div>
-
-                <div class="h-52 w-full">
-                    <canvas id="moodChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Mood Summary Counts Badges -->
-            <div class="bg-white border-2 border-dark rounded-playful-lg p-5 shadow-border-offset">
-                <h4 class="text-sm font-extrabold text-dark mb-3 uppercase tracking-wider">Ringkasan Suasana Hati:</h4>
-                <div class="grid grid-cols-3 gap-2 text-center">
-                    @php
-                        $counts = $moodData['moodCounts'] ?? [];
-                    @endphp
-                    <div class="p-2 bg-yellow-100 border border-dark rounded-playful-sm">
-                        <span class="text-xl">😊</span>
-                        <p class="text-xs font-extrabold text-dark mt-0.5">Bahagia: {{ $counts['Bahagia'] ?? 0 }}</p>
-                    </div>
-                    <div class="p-2 bg-blue-100 border border-dark rounded-playful-sm">
-                        <span class="text-xl">😌</span>
-                        <p class="text-xs font-extrabold text-dark mt-0.5">Tenang: {{ $counts['Tenang'] ?? 0 }}</p>
-                    </div>
-                    <div class="p-2 bg-gray-100 border border-dark rounded-playful-sm">
-                        <span class="text-xl">😐</span>
-                        <p class="text-xs font-extrabold text-dark mt-0.5">Biasa: {{ $counts['Biasa'] ?? 0 }}</p>
-                    </div>
-                    <div class="p-2 bg-purple-100 border border-dark rounded-playful-sm">
-                        <span class="text-xl">😢</span>
-                        <p class="text-xs font-extrabold text-dark mt-0.5">Sedih: {{ $counts['Sedih'] ?? 0 }}</p>
-                    </div>
-                    <div class="p-2 bg-red-100 border border-dark rounded-playful-sm">
-                        <span class="text-xl">😡</span>
-                        <p class="text-xs font-extrabold text-dark mt-0.5">Marah: {{ $counts['Marah'] ?? 0 }}</p>
-                    </div>
-                    <div class="p-2 bg-green-100 border border-dark rounded-playful-sm">
-                        <span class="text-xl">💪</span>
-                        <p class="text-xs font-extrabold text-dark mt-0.5">Semangat: {{ $counts['Semangat'] ?? 0 }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Target Streak Card -->
-            <div class="bg-primary/20 border-2 border-dark rounded-playful-lg p-5 shadow-border-offset">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-extrabold text-dark text-sm">🎯 Target 7 Hari Konsistensi</h4>
-                    <span class="text-xs font-extrabold text-dark">{{ min($streakCount, 7) }}/7 Hari</span>
-                </div>
-                <div class="w-full bg-white border-2 border-dark rounded-full h-4 p-0.5 overflow-hidden">
-                    <div class="bg-primary h-full rounded-full transition-all duration-500" style="width: {{ min(($streakCount / 7) * 100, 100) }}%;"></div>
-                </div>
-                <p class="text-xs font-bold text-dark/70 mt-2">Tetap jaga kebiasaan baikmu untuk menjaga kesejahteraan emosional.</p>
-            </div>
-        </div>
     </div>
 </div>
 @endsection
-
 @section('script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Data mood dari controller
-        const moodData = @json($moodData);
-        const moodHistory = moodData && moodData.moodHistory ? moodData.moodHistory : [];
+    const moodInfo = {
+    "Bahagia": { emoji: "😊", color: "bg-yellow-400", borderColor: "border-yellow-600" },
+    "Tenang": { emoji: "😌", color: "bg-blue-400", borderColor: "border-blue-600" },
+    "Biasa": { emoji: "😐", color: "bg-gray-400", borderColor: "border-gray-600" },
+    "Sedih": { emoji: "😢", color: "bg-purple-400", borderColor: "border-purple-600" },
+    "Marah": { emoji: "😡", color: "bg-red-400", borderColor: "border-red-600" },
+    "Semangat": { emoji: "💪", color: "bg-green-400", borderColor: "border-green-600" }
+};
 
-        const chartCanvas = document.getElementById('moodChart');
-        if (chartCanvas && moodHistory.length) {
-            const ctx = chartCanvas.getContext('2d');
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Dummy Data & Setup ---
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        let currentDate = new Date();
 
-            new Chart(ctx, {
+    const moodData = @json($moodData);
+
+        const generateDummyData = (year, month) => {
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const postDays = new Set();
+            const journalDays = new Set();
+            const curhatDays = new Set();
+            const moodLogs = {};
+            const moodHistory = [];
+            const moodCounts = {
+                'Bahagia': 0
+                , 'Tenang': 0
+                , 'Biasa': 0
+                , 'Sedih': 0
+                , 'Marah': 0
+                , 'Semangat': 0
+            };
+
+            // Generate weekly mood history
+            for (let i = 0; i < 7; i++) {
+                const dayMood = Object.keys(moodData)[Math.floor(Math.random() * Object.keys(moodData).length)];
+                moodHistory.push({
+                    day: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'][i]
+                    , mood: dayMood
+                    , value: Math.floor(Math.random() * 60) + 40
+                });
+            }
+
+            // Generate daily activity logs
+            for (let i = 0; i < Math.floor(daysInMonth / 4); i++) {
+                postDays.add(Math.floor(Math.random() * daysInMonth) + 1);
+            }
+            for (let i = 0; i < Math.floor(daysInMonth / 5); i++) {
+                journalDays.add(Math.floor(Math.random() * daysInMonth) + 1);
+            }
+            for (let i = 0; i < Math.floor(daysInMonth / 6); i++) {
+                curhatDays.add(Math.floor(Math.random() * daysInMonth) + 1);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                if (Math.random() > 0.5) {
+                    const mood = Object.keys(moodData)[Math.floor(Math.random() * Object.keys(moodData).length)];
+                    moodLogs[i] = {
+                        mood
+                        , emoji: moodData[mood].emoji
+                    };
+                    moodCounts[mood]++;
+                }
+            }
+
+            return {
+                postDays: Array.from(postDays).sort((a, b) => a - b)
+                , journalDays: Array.from(journalDays).sort((a, b) => a - b)
+                , curhatDays: Array.from(curhatDays).sort((a, b) => a - b)
+                , moodLogs
+                , moodHistory
+                , moodCounts
+            };
+        };
+
+        let currentData = generateDummyData(currentDate.getFullYear(), currentDate.getMonth());
+
+        // --- Calendar Functionality ---
+        function renderCalendar() {
+            const calendarBody = document.getElementById('calendarBody');
+            const monthName = document.getElementById('monthName');
+            const yearDisplay = document.getElementById('yearDisplay');
+
+            calendarBody.innerHTML = '';
+            monthName.textContent = monthNames[currentDate.getMonth()];
+            yearDisplay.textContent = currentDate.getFullYear();
+
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+            const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+            let startDay = firstDay === 0 ? 6 : firstDay - 1;
+
+            for (let i = 0; i < startDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'p-2';
+                calendarBody.appendChild(emptyCell);
+            }
+
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day relative flex flex-col items-center justify-center cursor-pointer transition-all p-2 hover:bg-gray-100 hover:scale-[1.02]';
+
+                // Add day number
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'font-bold text-dark font-lexend mb-1';
+                dayDiv.textContent = day;
+                cell.appendChild(dayDiv);
+
+                // Add mood emoji with hover effect
+                if (currentData.moodLogs[day]) {
+                    const moodEmoji = document.createElement('span');
+                    moodEmoji.className = 'text-xl drop-shadow-sm transition-transform group-hover:scale-125';
+                    moodEmoji.textContent = currentData.moodLogs[day].emoji;
+                    cell.appendChild(moodEmoji);
+                }
+
+                // Indicators for activities
+                const indicatorsContainer = document.createElement('div');
+                indicatorsContainer.className = 'absolute bottom-1 right-1 flex gap-1';
+
+                if (currentData.postDays.includes(day)) {
+                    const postIndicator = document.createElement('div');
+                    postIndicator.className = 'w-2 h-2 rounded-full border border-dark bg-yellow-400'; // Kuning untuk Post
+                    postIndicator.title = 'Postingan dibuat hari ini';
+                    indicatorsContainer.appendChild(postIndicator);
+                }
+                if (currentData.journalDays.includes(day)) {
+                    const journalIndicator = document.createElement('div');
+                    journalIndicator.className = 'w-2 h-2 rounded-full border border-dark bg-purple-400'; // Ungu untuk Journal
+                    journalIndicator.title = 'Jurnal ditulis hari ini';
+                    indicatorsContainer.appendChild(journalIndicator);
+                }
+                if (currentData.curhatDays.includes(day)) {
+                    const curhatIndicator = document.createElement('div');
+                    curhatIndicator.className = 'w-2 h-2 rounded-full border border-dark bg-green-400'; // Hijau untuk Curhat
+                    curhatIndicator.title = 'Curhat ditulis hari ini';
+                    indicatorsContainer.appendChild(curhatIndicator);
+                }
+
+                cell.appendChild(indicatorsContainer);
+
+                // Highlight today
+                if (day === today.getDate() && currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear()) {
+                    cell.classList.add('bg-primary', 'text-white', 'font-extrabold', 'today', 'hover:bg-primary/90');
+                    dayDiv.classList.add('text-white');
+                    cell.style.borderRadius = '0.5rem';
+                    cell.style.border = '2px solid black';
+                    cell.style.boxShadow = '2px 2px 0px black';
+                } else {
+                    cell.style.borderRadius = '0.5rem';
+                    cell.style.border = '2px solid black';
+                    cell.style.boxShadow = '2px 2px 0px black';
+                }
+
+                // Add click event to show details
+                cell.addEventListener('click', function() {
+                    showDayDetails(day, currentDate.getMonth(), currentDate.getFullYear());
+                });
+
+                calendarBody.appendChild(cell);
+            }
+
+            updateMoodSummary();
+        }
+
+        function showDayDetails(day, month, year) {
+            const mood = currentData.moodLogs[day] ? currentData.moodLogs[day].emoji : 'Tidak ada';
+            const postStatus = currentData.postDays.includes(day) ? 'Ada' : 'Tidak ada';
+            const journalStatus = currentData.journalDays.includes(day) ? 'Ditulis' : 'Tidak ada';
+            const curhatStatus = currentData.curhatDays.includes(day) ? 'Ditulis' : 'Tidak ada';
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white p-6 rounded-playful-lg border-2 border-dark max-w-md w-full shadow-border-offset">
+                    <h3 class="text-xl font-bold mb-4 font-exo2 text-center text-dark">Detail Aktivitas - ${day} ${monthNames[month]} ${year}</h3>
+                    <div class="space-y-3 font-lexend text-dark">
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl">${mood}</span>
+                            <p>Mood: ${currentData.moodLogs[day] ? Object.keys(moodData).find(key => moodData[key].emoji === mood) : 'Tidak ada'}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full bg-yellow-400 border-2 border-dark"></div>
+                            <p>Postingan: ${postStatus}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full bg-purple-400 border-2 border-dark"></div>
+                            <p>Jurnal: ${journalStatus}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full bg-green-400 border-2 border-dark"></div>
+                            <p>Curhat: ${curhatStatus}</p>
+                        </div>
+                    </div>
+                    <button class="mt-6 bg-primary text-white px-4 py-2 rounded-playful-lg border-2 border-dark w-full hover:bg-orange transition font-lexend shadow-border-offset active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_2px_0px_#1A1A40]">Tutup</button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            modal.querySelector('button').addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+        }
+
+       function updateMoodSummary() {
+    const summaryContainer = document.getElementById('moodSummaryIcons');
+    summaryContainer.innerHTML = '';
+    for (const moodName in moodData.moodCounts) {
+        if (moodData.moodCounts[moodName] > 0) {
+            const moodItem = document.createElement('div');
+            moodItem.className = 'flex flex-col items-center flex-grow';
+            moodItem.innerHTML = `
+                <div class="w-16 h-16 ${moodInfo[moodName].color} rounded-full flex items-center justify-center mb-2 border-2 ${moodInfo[moodName].borderColor}">
+                    <span class="text-3xl">${moodInfo[moodName].emoji}</span>
+                </div>
+                <span class="text-sm font-medium font-lexend text-center">${moodName}</span>
+                <span class="text-xs font-bold font-exo2 text-dark mt-1">${moodData.moodCounts[moodName]} hari</span>
+            `;
+            summaryContainer.appendChild(moodItem);
+        }
+    }
+}
+
+
+        // --- Stats Functionality ---
+        function updateStats() {
+            const postCount = currentData.postDays.length;
+            const journalCount = currentData.journalDays.length;
+            const curhatCount = currentData.curhatDays.length;
+            const streakCount = Math.floor(Math.random() * 15) + 1;
+
+            animateValue('postCount', 0, postCount, 1000);
+            animateValue('journalCount', 0, journalCount, 1000);
+            animateValue('streakCount', 0, streakCount, 1000);
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // --- Mood chart ---
+        let moodChartInstance = null;
+
+        function initMoodChart() {
+            if (moodChartInstance) {
+                moodChartInstance.destroy();
+            }
+            
+            // Siapkan data untuk chart (contoh, perlu disesuaikan dengan data real)
+            const moodHistory = [
+                { day: 'Sen', mood: 'Bahagia', value: 80 },
+                { day: 'Sel', mood: 'Tenang', value: 70 },
+                { day: 'Rab', mood: 'Biasa', value: 60 },
+                { day: 'Kam', mood: 'Sedih', value: 40 },
+                { day: 'Jum', mood: 'Marah', value: 30 },
+                { day: 'Sab', mood: 'Semangat', value: 90 },
+                { day: 'Min', mood: 'Bahagia', value: 85 }
+            ];
+            
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            moodChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: moodHistory.map(d => d.day),
@@ -226,64 +365,98 @@
                         label: 'Tingkat Mood',
                         data: moodHistory.map(d => d.value),
                         backgroundColor: moodHistory.map(d => {
-                            switch(d.mood) {
-                                case 'Bahagia': return 'rgba(245, 158, 11, 0.8)';
-                                case 'Tenang': return 'rgba(59, 130, 246, 0.8)';
-                                case 'Biasa': return 'rgba(156, 163, 175, 0.8)';
-                                case 'Sedih': return 'rgba(139, 92, 246, 0.8)';
-                                case 'Marah': return 'rgba(239, 68, 68, 0.8)';
-                                case 'Semangat': return 'rgba(34, 197, 94, 0.8)';
-                                default: return 'rgba(156, 163, 175, 0.8)';
-                            }
+                            const color = moodInfo[d.mood].color;
+                            return color === 'bg-yellow-400' ? 'rgba(245, 158, 11, 0.7)' :
+                                   color === 'bg-blue-400' ? 'rgba(59, 130, 246, 0.7)' :
+                                   color === 'bg-gray-400' ? 'rgba(156, 163, 175, 0.7)' :
+                                   color === 'bg-purple-400' ? 'rgba(139, 92, 246, 0.7)' :
+                                   color === 'bg-red-400' ? 'rgba(239, 68, 68, 0.7)' :
+                                   'rgba(34, 197, 94, 0.7)';
                         }),
-                        borderColor: '#080330',
+                        borderColor: moodHistory.map(d => {
+                            const borderColor = moodInfo[d.mood].borderColor;
+                            return borderColor === 'border-yellow-600' ? 'rgb(245, 158, 11)' :
+                                   borderColor === 'border-blue-600' ? 'rgb(59, 130, 246)' :
+                                   borderColor === 'border-gray-600' ? 'rgb(156, 163, 175)' :
+                                   borderColor === 'border-purple-600' ? 'rgb(139, 92, 246)' :
+                                   borderColor === 'border-red-600' ? 'rgb(239, 68, 68)' :
+                                   'rgb(34, 197, 94)';
+                        }),
                         borderWidth: 2,
                         borderRadius: 8,
                         borderSkipped: false
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#1A1A40',
+                                font: {
+                                    family: 'Lexend'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                color: '#1A1A40',
+                                font: {
+                                    family: 'Lexend'
+                                }
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    },
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
                             callbacks: {
-                                label: function(ctx) {
-                                    const index = ctx.dataIndex;
-                                    const item = moodHistory[index];
-                                    return `Mood: ${item ? item.mood : 'Biasa'}`;
+                                label: function(context) {
+                                    const moodName = moodHistory[context.dataIndex].mood;
+                                    return `Mood: ${moodName} (${context.raw}%)`;
                                 }
                             }
                         }
                     },
-                    scales: {
-                        y: {
-                            min: 0,
-                            max: 100,
-                            ticks: { display: false },
-                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
-                        },
-                        x: {
-                            ticks: {
-                                font: { family: 'Lexend', weight: 'bold' },
-                                color: '#080330'
-                            },
-                            grid: { display: false }
-                        }
-                    }
+                    maintainAspectRatio: false
                 }
             });
         }
 
-        window.showDayDetails = function(day, mood, hasJournal, hasPost, hasExercise) {
-            let details = `📅 Detail Aktivitas Tanggal ${day}:\n`;
-            details += mood ? `• Mood: ${mood.toUpperCase()}\n` : `• Mood: Belum dicatat\n`;
-            details += hasJournal ? `• Jurnal: Ditulis ✅\n` : `• Jurnal: Tidak ada\n`;
-            details += hasPost ? `• Post Komunitas: Ada ✅\n` : `• Post Komunitas: Tidak ada\n`;
-            details += hasExercise ? `• Exercise: Selesai ✅` : `• Exercise: Tidak ada`;
-            alert(details);
-        };
+        // --- Event listeners ---
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            currentData = generateDummyData(currentDate.getFullYear(), currentDate.getMonth());
+            renderCalendar();
+            initMoodChart();
+            updateStats();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            currentData = generateDummyData(currentDate.getFullYear(), currentDate.getMonth());
+            renderCalendar();
+            initMoodChart();
+            updateStats();
+        });
+
+        // --- Initialize ---
+        renderCalendar();
+        updateStats();
+        initMoodChart();
     });
+
 </script>
 @endsection
