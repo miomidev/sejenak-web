@@ -170,6 +170,27 @@ class TransactionController extends Controller
         return view('transactions.failed');
     }
 
+    /**
+     * Menampilkan riwayat transaksi pengguna yang sedang login.
+     */
+    public function userHistory()
+    {
+        $userId = Auth::id();
+
+        // Lazy Expiration: Update transaksi pending yang sudah lebih dari 60 menit menjadi expired
+        Transaction::where('user_id', $userId)
+            ->where('status', 'pending')
+            ->where('created_at', '<', now()->subMinutes(60))
+            ->update(['status' => 'expired']);
+
+        // Ambil riwayat transaksi, terbaru di atas
+        $transactions = Transaction::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('transactions.history', compact('transactions'));
+    }
+
     public function index()
     {
         $transactions = Transaction::with('user')->orderBy('created_at', 'desc')->paginate(15);

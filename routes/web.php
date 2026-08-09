@@ -93,6 +93,7 @@ Route::middleware([
     // Route::get('/exercise', [DashboardController::class,'index'])->name('user.exercise');
     Route::get('/setting', [DashboardController::class,'index'])->name('user.setting');
     Route::get('/token', [TransactionController::class, 'showTokenPage'])->name('user.token');
+    Route::get('/riwayat-transaksi', [TransactionController::class, 'userHistory'])->name('user.transactions.history');
     Route::get('/challenges',function(){
         return view('challenges.user');
     })->name('user.challenges');

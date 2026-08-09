@@ -48,6 +48,10 @@
                         <i class="fas fa-cart-plus mr-2"></i> Beli Token
                     </a>
 
+                    <a href="{{ route('user.transactions.history') }}" class="click-1 w-full px-4 py-2 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-100 transition-all duration-200">
+                        <i class="fas fa-history mr-2 text-primary"></i> Riwayat Transaksi
+                    </a>
+
                     <div class="flex flex-col items-start md:flex-row md:justify-between md:items-center py-2 border-b border-gray-200 last:border-b-0">
                         <span class="text-dark font-semibold mb-1 md:mb-0"><i class="fas fa-book-open text-orange mr-2"></i> Jumlah Jurnal</span>
                         <span class="font-bold text-dark w-full text-right md:w-auto">{{ Auth::user()->journals()->count() }}</span>
