@@ -234,6 +234,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_ad
     
     // Reports
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    
+    // Token Settings
+    Route::get('/token-settings', [\App\Http\Controllers\Admin\TokenSettingController::class, 'index'])->name('token.settings');
+    Route::post('/token-settings/session-price', [\App\Http\Controllers\Admin\TokenSettingController::class, 'updateSessionPrice'])->name('token.settings.session_price');
+    Route::post('/token-settings/package', [\App\Http\Controllers\Admin\TokenSettingController::class, 'storePackage'])->name('token.settings.store_package');
+    Route::put('/token-settings/package/{id}', [\App\Http\Controllers\Admin\TokenSettingController::class, 'updatePackage'])->name('token.settings.update_package');
+    Route::delete('/token-settings/package/{id}', [\App\Http\Controllers\Admin\TokenSettingController::class, 'destroyPackage'])->name('token.settings.destroy_package');
 });
 
 // // Konselor Routes

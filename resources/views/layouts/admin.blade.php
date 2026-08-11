@@ -138,6 +138,11 @@
                 <i class="fas fa-chart-line w-6 text-center"></i>
                 <span class="ml-4 font-semibold">Laporan</span>
             </a>
+            
+            <a href="{{ route('admin.token.settings') }}" class="flex items-center mt-3 px-4 py-3 rounded-playful-sm transition-colors duration-200 hover:bg-secondary {{ request()->routeIs('admin.token.settings*') ? 'bg-secondary' : '' }}">
+                <i class="fas fa-coins w-6 text-center"></i>
+                <span class="ml-4 font-semibold">Pengaturan Token</span>
+            </a>
         </nav>
 
         <div class="pt-4 border-t border-gray-700">

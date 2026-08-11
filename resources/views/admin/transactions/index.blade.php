@@ -28,12 +28,13 @@
                     <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}" class="mt-1 w-full px-4 py-2 rounded-playful-sm border-2 border-dark">
                 </div>
                 <div>
-                    <label for="type" class="text-xs font-bold text-dark">Tipe</label>
-                    <select name="type" id="type" class="mt-1 w-full px-4 py-2 rounded-playful-sm border-2 border-dark bg-white">
-                        <option value="">Semua Tipe</option>
-                        {{-- Asumsi tipe transaksi --}}
-                        <option value="pembelian_token" {{ request('type') == 'pembelian_token' ? 'selected' : '' }}>Pembelian Token</option>
-                        <option value="penggunaan_sesi" {{ request('type') == 'penggunaan_sesi' ? 'selected' : '' }}>Penggunaan Sesi</option>
+                    <label for="status" class="text-xs font-bold text-dark">Status</label>
+                    <select name="status" id="status" class="mt-1 w-full px-4 py-2 rounded-playful-sm border-2 border-dark bg-white">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="success" {{ request('status') == 'success' ? 'selected' : '' }}>Success</option>
+                        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                        <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
                     </select>
                 </div>
                 <div class="col-span-1 md:col-span-2 flex items-end space-x-2">
@@ -59,9 +60,9 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Tanggal</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Pengguna</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Tipe</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Deskripsi</th>
-                        <th class="px-6 py-3 text-right text-xs font-bold text-dark uppercase tracking-wider">Jumlah</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Paket</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-dark uppercase tracking-wider">Harga (Rp)</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -72,17 +73,21 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <p class="text-sm font-semibold text-dark">{{ $transaction->user->name ?? 'N/A' }}</p>
+                                @if(isset($transaction->user->username))
+                                    <p class="text-xs text-blue-500">{{ '@' . $transaction->user->username }}</p>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize {{ $transaction->type == 'pembelian_token' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ str_replace('_', ' ', $transaction->type) }}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize {{ $transaction->status == 'success' ? 'bg-green-100 text-green-800' : ($transaction->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                    {{ $transaction->status }}
                                 </span>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-gray-600">{{ $transaction->description }}</p>
+                                <p class="text-sm font-bold text-dark">{{ $transaction->package_name }}</p>
+                                <p class="text-xs text-gray-500">{{ $transaction->token_amount }} Token</p>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right">
-                                <p class="text-sm font-bold text-dark">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</p>
+                                <p class="text-sm font-bold text-dark">Rp {{ number_format($transaction->price, 0, ',', '.') }}</p>
                             </td>
                         </tr>
                     @empty

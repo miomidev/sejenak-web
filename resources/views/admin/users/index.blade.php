@@ -20,7 +20,7 @@
         <form method="GET" action="{{ route('admin.users') }}" class="mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <input type="text" name="search" placeholder="Cari nama atau email..." value="{{ request('search') }}" class="w-full px-4 py-2 rounded-playful-sm border-2 border-dark focus:ring-primary focus:border-primary">
+                    <input type="text" name="search" placeholder="Cari nama, email, atau username..." value="{{ request('search') }}" class="w-full px-4 py-2 rounded-playful-sm border-2 border-dark focus:ring-primary focus:border-primary">
                 </div>
                 <div>
                     <select name="role" class="w-full px-4 py-2 rounded-playful-sm border-2 border-dark focus:ring-primary focus:border-primary bg-white">
@@ -46,6 +46,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Nama</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Token</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-dark uppercase tracking-wider">Peran</th>
                         <th class="px-6 py-3 text-center text-xs font-bold text-dark uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-right text-xs font-bold text-dark uppercase tracking-wider">Aksi</th>
@@ -62,8 +63,16 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-semibold text-dark">{{ $user->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $user->email }}</div>
+                                        <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                                        @if($user->username)
+                                            <div class="text-xs text-blue-500">{{ '@' . $user->username }}</div>
+                                        @endif
                                     </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-bold text-yellow-600 flex items-center">
+                                    <i class="fas fa-coins mr-1"></i> {{ number_format($user->tokens_balance ?? 0) }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">

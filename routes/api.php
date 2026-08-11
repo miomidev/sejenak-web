@@ -23,6 +23,9 @@ use App\Http\Controllers\Api\RecommendationController;
 use App\Http\Controllers\Api\SmartNotificationController;
 use App\Http\Controllers\Api\AiChatV2Controller;
 use App\Http\Controllers\Api\UserDailyChallengeController;
+use App\Http\Controllers\Api\CounselorController;
+use App\Http\Controllers\Api\ProposalController as ApiProposalController;
+use App\Http\Controllers\Api\TransactionController as ApiTransactionController;
 use App\Http\Controllers\Api\DailyTaskController;
 
 
@@ -107,14 +110,24 @@ Route::middleware('auth:api')->group(function () {
         });
     });
     Route::prefix('proposals')->group(function () {
-        Route::get('/', [ProposalController::class, 'index']);
-        Route::post('/', [ProposalController::class, 'store']);
-        Route::get('/{proposal}', [ProposalController::class, 'show']);
-        Route::put('/{proposal}', [ProposalController::class, 'update']);
-        Route::delete('/{proposal}', [ProposalController::class, 'destroy']);
+        Route::post('/', [ApiProposalController::class, 'submit']);
+        Route::get('/my', [ApiProposalController::class, 'myProposal']);
+    });
 
-        Route::post('/{proposal}/approve', [ProposalController::class, 'approve']);
-        Route::post('/{proposal}/reject', [ProposalController::class, 'reject']);
+    Route::prefix('counselors')->group(function () {
+        Route::get('/', [CounselorController::class, 'index']);
+    });
+
+    Route::prefix('sessions')->group(function () {
+        Route::get('/price', [CounselorController::class, 'getSessionPrice']);
+        Route::post('/request', [CounselorController::class, 'requestSession']);
+        Route::get('/', [CounselorController::class, 'mySessions']);
+    });
+
+    Route::prefix('transactions')->group(function () {
+        Route::get('/token-packages', [ApiTransactionController::class, 'getPackages']);
+        Route::post('/checkout', [ApiTransactionController::class, 'checkout']);
+        Route::get('/', [ApiTransactionController::class, 'history']);
     });
     Route::prefix('daily-challenges')->group(function () {
         Route::get('/', [UserDailyChallengeController::class, 'listChallenges']);

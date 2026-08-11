@@ -66,9 +66,12 @@ class AdminController extends Controller
     {
         $query = User::with('role');
 
-        if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('username', 'like', '%' . $request->search . '%');
+            });
         }
 
         if ($request->has('role')) {
@@ -289,8 +292,8 @@ class AdminController extends Controller
     {
         $query = Transaction::with('user');
 
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
         }
 
         if ($request->has('date_from')) {
@@ -301,8 +304,8 @@ class AdminController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
+        $totalAmount = (clone $query)->where('status', 'success')->sum('price');
         $transactions = $query->latest()->paginate(20);
-        $totalAmount = $query->sum('price');
 
         return view('admin.transactions.index', compact('transactions', 'totalAmount'));
     }
@@ -324,15 +327,16 @@ class AdminController extends Controller
         // TODO: Implement export to CSV/Excel
         return response()->streamDownload(function() use ($transactions) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Date', 'User', 'Type', 'Amount', 'Description']);
+            fputcsv($handle, ['Date', 'User', 'Package', 'Token Amount', 'Status', 'Price']);
 
             foreach ($transactions as $transaction) {
                 fputcsv($handle, [
                     $transaction->created_at->format('Y-m-d H:i'),
                     $transaction->user->name,
-                    $transaction->type,
-                    $transaction->amount,
-                    $transaction->description
+                    $transaction->package_name,
+                    $transaction->token_amount,
+                    $transaction->status,
+                    $transaction->price
                 ]);
             }
 
