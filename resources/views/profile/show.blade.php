@@ -100,13 +100,13 @@
                     <i class="fas fa-user-tie mr-2 text-blue-500"></i> Ajukan Akun Profesional
                 </a>
                 @endunless
-                <a href="#" class="click-1 w-full px-4 py-2 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-200 transition-all duration-200 text-sm">
+                <a href="{{ route('user.profiles.security') }}" class="click-1 w-full px-4 py-2 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-200 transition-all duration-200 text-sm">
                     <i class="fas fa-envelope mr-2 text-orange-500"></i> Ganti Email
                 </a>
-                <a href="#" class="click-1 w-full px-4 py-2 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-200 transition-all duration-200 text-sm">
+                <a href="{{ route('user.profiles.security') }}" class="click-1 w-full px-4 py-2 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-200 transition-all duration-200 text-sm">
                     <i class="fas fa-key mr-2 text-gray-500"></i> Ganti Kata Sandi
                 </a>
-                <a href="#" class="click-1 w-full px-4 py-2 bg-red-500 text-white font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-red-600 transition-all duration-200 text-sm">
+                <a href="{{ route('user.profiles.security') }}" class="click-1 w-full px-4 py-2 bg-red-500 text-white font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-red-600 transition-all duration-200 text-sm">
                     <i class="fas fa-trash-alt mr-2"></i> Hapus Akun
                 </a>
             </div>

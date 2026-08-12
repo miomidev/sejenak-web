@@ -111,6 +111,7 @@ Route::middleware([
     Route::get('/payment/pending', [TransactionController::class, 'pending'])->name('payment.pending');
     Route::get('/payment/failed', [TransactionController::class, 'failed'])->name('payment.failed');
     Route::get('/profile', [ProfileController::class,'show'])->name('user.profiles');
+    Route::get('/profile/security', [ProfileController::class,'security'])->name('user.profiles.security');
     Route::get('/profile/edit/{name}', [ProfileController::class,'edit'])->name('user.profiles.edit');
     Route::patch('/profile/edit', [ProfileController::class,'update'])->name('user.profiles.update');
     Route::post('/profile/customization', [ProfileController::class, 'updateCustomization'])->name('user.profiles.customization');
