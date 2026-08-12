@@ -20,6 +20,12 @@ class ProfileController extends Controller
         
         return view('profile.edit', ['user' => $user]);
     }
+    
+    public function security()
+    {
+        return view('profile.security');
+    }
+
     public function update(Request $request)
     {
         // Validasi data yang masuk
