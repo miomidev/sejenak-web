@@ -176,8 +176,18 @@ class CounselorController extends Controller
             return response()->json(['success' => false, 'message' => 'Tidak diizinkan'], 403);
         }
 
-        $session->status = 'completed';
-        $session->save();
+        if ($session->status !== 'completed') {
+            $session->status = 'completed';
+            $session->save();
+
+            // Berikan token ke konselor
+            $sessionPrice = (int) (Setting::where('key', 'session_price')->first()->value ?? 500);
+            $counselor = User::find($session->konselor_id);
+            if ($counselor) {
+                $counselor->tokens_balance += $sessionPrice;
+                $counselor->save();
+            }
+        }
 
         return response()->json([
             'success' => true,
