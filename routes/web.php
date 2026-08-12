@@ -278,3 +278,5 @@ Route::get('/test-404', function () {
 Route::get('/test-500', function () {
     abort(500);
 });
+
+

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('token_amount'); // Jumlah token yang dibeli
             $table->bigInteger('price'); // Harga paket
             $table->enum('status', ['pending', 'success', 'failed', 'expired']);
-            $table->string('snap_token')->nullable(); // Token untuk menampilkan Midtrans Snap
+            $table->text('snap_token')->nullable(); // Token untuk menampilkan Midtrans Snap
             $table->timestamps();
         });
     }

@@ -102,7 +102,7 @@
                     <a href="#" class="w-full px-4 py-3 bg-primary text-white font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-green-600">
                         <i class="fas fa-calendar-alt mr-2"></i> Lihat Kalender Lengkap
                     </a>
-                    <a href="#" class="w-full px-4 py-3 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-200">
+                    <a href="{{ route('chat') }}" class="w-full px-4 py-3 bg-white text-dark font-bold text-center rounded-playful-sm border-2 border-dark shadow-border-offset hover:bg-gray-200">
                         <i class="fas fa-comments mr-2"></i> Buka Pesan Klien
                     </a>
                 </div>

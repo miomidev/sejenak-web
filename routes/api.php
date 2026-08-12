@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ChatBotController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\Api\ComunityController;
 use App\Http\Controllers\Api\DashboardController;
@@ -122,6 +123,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/price', [CounselorController::class, 'getSessionPrice']);
         Route::post('/request', [CounselorController::class, 'requestSession']);
         Route::get('/', [CounselorController::class, 'mySessions']);
+        Route::post('/{id}/accept', [CounselorController::class, 'acceptSession']);
+        Route::post('/{id}/end', [CounselorController::class, 'endSession']);
+    });
+
+    Route::prefix('chat')->group(function () {
+        Route::get('users/list', [MessagesController::class, 'getUsers']);
+        Route::get('messages/{id}', [MessagesController::class, 'getMessages']);
+        Route::post('send', [MessagesController::class, 'sendMessage']);
+        Route::post('mark-read/{id}', [MessagesController::class, 'markAsRead']);
     });
 
     Route::prefix('transactions')->group(function () {

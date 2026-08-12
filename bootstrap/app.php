@@ -17,6 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
+        $middleware->web(append: [
+            \App\Http\Middleware\UserActivity::class,
+        ]);
+
+        $middleware->api(append: [
+            \App\Http\Middleware\UserActivity::class,
+        ]);
+
         // Pengecualian CSRF untuk MiomiPay webhook
         $middleware->validateCsrfTokens(except: [
             'api/miomipay/webhook',

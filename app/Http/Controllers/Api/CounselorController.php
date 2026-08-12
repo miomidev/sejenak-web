@@ -32,7 +32,7 @@ class CounselorController extends Controller
         $counselors = User::whereHas('role', function ($query) {
             $query->where('name', 'konselor');
         })
-        ->select('id', 'name', 'avatar', 'bio', 'is_online')
+        ->select('id', 'name', 'avatar', 'bio')
         ->get();
 
         // Map data to include dummy experience/specialization if bio doesn't have it
@@ -62,7 +62,8 @@ class CounselorController extends Controller
     public function requestSession(Request $request)
     {
         $request->validate([
-            'counselor_id' => 'required|exists:users,id'
+            'counselor_id' => 'required|exists:users,id',
+            'scheduled_at' => 'nullable|date'
         ]);
 
         $user = Auth::user();
@@ -100,7 +101,8 @@ class CounselorController extends Controller
             $session = Session::create([
                 'user_id' => $user->id,
                 'konselor_id' => $counselor->id,
-                'status' => 'pending' // pending until counselor accepts
+                'status' => 'pending', // pending until counselor accepts
+                'scheduled_at' => $request->scheduled_at
             ]);
 
             DB::commit();
@@ -137,6 +139,50 @@ class CounselorController extends Controller
         return response()->json([
             'success' => true,
             'data' => $sessions
+        ]);
+    }
+
+    /**
+     * Counselor accepts a session request
+     */
+    public function acceptSession($id)
+    {
+        $session = Session::find($id);
+        if (!$session) return response()->json(['success' => false, 'message' => 'Sesi tidak ditemukan'], 404);
+        
+        if (Auth::id() !== $session->konselor_id) {
+            return response()->json(['success' => false, 'message' => 'Tidak diizinkan'], 403);
+        }
+
+        $session->status = 'ongoing';
+        $session->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesi berhasil dimulai.',
+            'data' => $session
+        ]);
+    }
+
+    /**
+     * End a counseling session
+     */
+    public function endSession($id)
+    {
+        $session = Session::find($id);
+        if (!$session) return response()->json(['success' => false, 'message' => 'Sesi tidak ditemukan'], 404);
+
+        if (Auth::id() !== $session->user_id && Auth::id() !== $session->konselor_id) {
+            return response()->json(['success' => false, 'message' => 'Tidak diizinkan'], 403);
+        }
+
+        $session->status = 'completed';
+        $session->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesi berhasil diakhiri.',
+            'data' => $session
         ]);
     }
 }

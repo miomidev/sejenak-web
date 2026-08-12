@@ -53,12 +53,20 @@ class MessagesController extends Controller
 
     public function getUsers()
     {
-        $users = User::where('id', '!=', Auth::id())
-                    ->select('id', 'name', 'email', 'avatar')
+        $user = Auth::user();
+        if ($user && $user->isCounselor()) {
+            $userIds = \App\Models\Session::where('konselor_id', $user->id)->pluck('user_id')->unique();
+            $query = User::whereIn('id', $userIds);
+        } else {
+            $query = User::where('id', '!=', Auth::id());
+        }
+
+        $users = $query->select('id', 'name', 'email', 'avatar')
                     ->get()
-                    ->map(function($user) {
-                        $user->is_online = Cache::has('user-is-online-' . $user->id);
-                        return $user;
+                    ->map(function($u) {
+                        $u->is_online = Cache::has('user-is-online-' . $u->id);
+                        $u->avatar = $u->avatar_url;
+                        return $u;
                     });
         
         return response()->json($users);

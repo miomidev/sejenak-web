@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(Auth::user()->isCounselor() ? 'layouts.konselor' : 'layouts.app')
 @section('title', 'Chat with Ahli')
 
 @section('content')
@@ -11,6 +11,7 @@
         </div>
         <div id="users-list" class="flex flex-col p-2 overflow-y-auto space-y-2">
             <!-- Daftar pengguna akan dimuat di sini oleh JavaScript -->
+            @if(!Auth::user()->isCounselor())
             <a href="{{ route('chat.bot') }}" class="click-1 user-list-item flex items-center p-3 rounded-playful-sm bg-primary border-2 border-dark shadow-border-offset">
                 <div class="w-10 h-10 rounded-full bg-dark flex items-center justify-center text-white mr-3">
                     <i class="fas fa-robot text-lg"></i>
@@ -20,28 +21,24 @@
                     <p class="text-xs text-dark">Temen untuk curhat anda</p>
                 </div>
             </a>
+            @endif
         </div>
     </div>
 
     <!-- Area Chat Utama -->
     <div id="chat-window-panel" class="flex-1 hidden md:flex flex-col bg-white border-2 border-dark rounded-playful-lg ml-[-12px] shadow-border-offset-lg mt-4 md:mt-0 p-4 relative">
         <!-- Header Chat -->
-        <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-2 flex items-center z-20 ">
-            <div id="current-chat-info" class="min-w-[150px] ">
-                    <div class="flex items-center p-2 bg-white rounded-md border-2 border-dark shadow-md z-20">
-
-                <div class="flex items-center ">
-                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-">
-                        <i class="fas fa-robot text-lg"></i>
-                    </div>
-                    <h3 class="font-bold text-base font-exo2 text-dark">Pilih percakapan</h3>
+        <div class="border-b-2 border-dark p-3 bg-white rounded-t-playful-lg flex items-center z-20 sticky top-0 w-full" id="current-chat-info">
+            <div class="flex items-center ">
+                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3">
+                    <i class="fas fa-robot text-lg"></i>
                 </div>
-                    </div>
+                <h3 class="font-bold text-base font-exo2 text-dark">Pilih percakapan</h3>
             </div>
         </div>
 
         <!-- Container Pesan -->
-        <div id="messages-container" class="flex-1 p-4 overflow-y-auto space-y-6 pt-16">
+        <div id="messages-container" class="flex-1 p-4 overflow-y-auto space-y-4">
             <!-- Pesan akan dimuat di sini oleh JavaScript -->
             <div class="flex justify-center items-center h-full">
                 <p class="text-gray-500">Pilih percakapan untuk mulai mengobrol</p>
@@ -106,6 +103,7 @@
     .message {
     margin-bottom: 1rem;
     max-width: 75%;
+    width: fit-content;
     padding: 0.75rem;
     border-radius: 0.5rem;
     border: 2px solid #080330;
@@ -141,245 +139,238 @@
 
 </style>
 
-<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const chatListPanel = document.getElementById('chat-list-panel');
     const chatWindowPanel = document.getElementById('chat-window-panel');
 
-    // window.ChatApp = {
-    //     currentUser: {{ Auth::id() }},
-    //     currentChat: null,
-    //     pusher: null,
-    //     channel: null,
+    window.ChatApp = {
+        currentUser: {{ Auth::id() }},
+        currentChat: null,
+        pusher: null,
+        channel: null,
 
-    //     isMobile: function() {
-    //         return window.innerWidth < 768;
-    //     },
+        isMobile: function() {
+            return window.innerWidth < 768;
+        },
 
-    //     init: function() {
-    //         this.loadUsers();
-    //         this.setupEventListeners();
-    //         this.initPusher();
-    //     },
+        init: function() {
+            this.loadUsers();
+            this.setupEventListeners();
+            
+            // Polling (Tarik data otomatis) setiap 3 detik seperti versi Mobile
+            setInterval(() => {
+                if (this.currentChat) {
+                    this.loadMessages(this.currentChat.id, true);
+                }
+            }, 3000);
+        },
 
-    //     initPusher: function() {
-    //         this.pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
-    //             cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
-    //             encrypted: true
-    //         });
-    //         this.channel = this.pusher.subscribe('user.' + this.currentUser);
-    //         this.channel.bind('ChatMessageSent', (data) => {
-    //             this.handleNewMessage(data);
-    //         });
-    //     },
+        loadUsers: function() {
+            fetch('{{ route("chat.users") }}')
+                .then(response => response.json())
+                .then(users => {
+                    this.renderUsers(users);
+                });
+        },
 
-    //     loadUsers: function() {
-    //         fetch('{{ route("chat.users") }}')
-    //             .then(response => response.json())
-    //             .then(users => {
-    //                 this.renderUsers(users);
-    //             });
-    //     },
+        renderUsers: function(users) {
+            const usersList = document.getElementById('users-list');
 
-    //     renderUsers: function(users) {
-    //         const usersList = document.getElementById('users-list');
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user-list-item';
+                userElement.dataset.userId = user.id;
+                userElement.innerHTML = `
+                    <div class="flex items-center w-full">
+                        <img src="${user.avatar || 'https://ui-avatars.com/api/?name=' + user.name}"
+                             class="rounded-full mr-3" width="40" height="40">
+                        <div class="flex-1">
+                            <h6 class="font-bold mb-0">${user.name}</h6>
+                            <small class="text-muted" id="status-${user.id}">
+                                ${user.is_online ? '<span class="online-status"></span> Online' : '<span class="offline-status"></span> Offline'}
+                            </small>
+                        </div>
+                        <span class="unread-count text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
+                              id="unread-${user.id}" style="display: none;">0</span>
+                    </div>
+                `;
 
-    //         users.forEach(user => {
-    //             const userElement = document.createElement('div');
-    //             userElement.className = 'user-list-item';
-    //             userElement.dataset.userId = user.id;
-    //             userElement.innerHTML = `
-    //                 <div class="flex items-center w-full">
-    //                     <img src="${user.avatar || 'https://ui-avatars.com/api/?name=' + user.name}"
-    //                          class="rounded-full mr-3" width="40" height="40">
-    //                     <div class="flex-1">
-    //                         <h6 class="font-bold mb-0">${user.name}</h6>
-    //                         <small class="text-muted" id="status-${user.id}">
-    //                             ${user.is_online ? '<span class="online-status"></span> Online' : '<span class="offline-status"></span> Offline'}
-    //                         </small>
-    //                     </div>
-    //                     <span class="unread-count text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full"
-    //                           id="unread-${user.id}" style="display: none;">0</span>
-    //                 </div>
-    //             `;
+                userElement.addEventListener('click', () => {
+                    this.selectUser(user);
+                });
 
-    //             userElement.addEventListener('click', () => {
-    //                 this.selectUser(user);
-    //             });
+                usersList.appendChild(userElement);
+            });
+        },
 
-    //             usersList.appendChild(userElement);
-    //         });
-    //     },
+        selectUser: function(user) {
+            this.currentChat = user;
 
-    //     selectUser: function(user) {
-    //         this.currentChat = user;
+            if (this.isMobile()) {
+                chatListPanel.classList.add('hidden');
+                chatWindowPanel.classList.remove('hidden');
+                chatWindowPanel.classList.add('flex');
+            }
 
-    //         if (this.isMobile()) {
-    //             chatListPanel.classList.add('hidden');
-    //             chatWindowPanel.classList.remove('hidden');
-    //             chatWindowPanel.classList.add('flex');
-    //         }
+            document.querySelectorAll('.user-list-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-user-id="${user.id}"]`).classList.add('active');
 
-    //         document.querySelectorAll('.user-list-item').forEach(item => {
-    //             item.classList.remove('active');
-    //         });
-    //         document.querySelector(`[data-user-id="${user.id}"]`).classList.add('active');
+            document.getElementById('current-chat-info').innerHTML = `
+                <div class="flex items-center w-full">
+                    <button id="back-to-list-button" class="text-dark mr-3 md:hidden">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
 
-    //         document.getElementById('current-chat-info').innerHTML = `
-    //             <div class="flex items-center p-2 bg-white rounded-md border-2 border-dark shadow-md z-20 w-full">
-    //                 <button id="back-to-list-button" class="text-dark mr-3 md:hidden">
-    //                     <i class="fas fa-arrow-left"></i>
-    //                 </button>
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-3 border-2 border-dark overflow-hidden">
+                        ${ user.avatar
+                           ? `<img src="${user.avatar}" class="w-full h-full object-cover">`
+                           : `<i class="fas fa-user text-sm"></i>` }
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-base text-dark m-0">${user.name}</h3>
+                        <p class="text-xs text-gray-600" id="current-user-status">
+                            ${document.getElementById(`status-${user.id}`).innerHTML}
+                        </p>
+                    </div>
+                </div>
+            `;
 
-    //                 <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-2 border-2 border-dark overflow-hidden">
-    //                     ${ user.avatar
-    //                        ? `<img src="${user.avatar}" class="w-full h-full object-cover">`
-    //                        : `<i class="fas fa-user text-sm"></i>` }
-    //                 </div>
-    //                 <div class="flex-1">
-    //                     <h3 class="font-bold text-base text-dark m-0">${user.name}</h3>
-    //                     <p class="text-xs text-gray-600" id="current-user-status">
-    //                         ${document.getElementById(`status-${user.id}`).innerHTML}
-    //                     </p>
-    //                 </div>
-    //             </div>
-    //         `;
+            document.getElementById('back-to-list-button').addEventListener('click', () => {
+                chatWindowPanel.classList.add('hidden');
+                chatWindowPanel.classList.remove('flex');
+                chatListPanel.classList.remove('hidden');
+                this.currentChat = null;
+            });
 
-    //         document.getElementById('back-to-list-button').addEventListener('click', () => {
-    //             chatWindowPanel.classList.add('hidden');
-    //             chatWindowPanel.classList.remove('flex');
-    //             chatListPanel.classList.remove('hidden');
-    //             this.currentChat = null;
-    //         });
+            document.getElementById('message-input-container').style.display = 'block';
+            this.loadMessages(user.id);
+        },
 
-    //         document.getElementById('message-input-container').style.display = 'block';
-    //         this.loadMessages(user.id);
-    //     },
+        loadMessages: function(userId, silent = false) {
+            fetch(`/chat/messages/${userId}`)
+                .then(response => response.json())
+                .then(messages => {
+                    this.renderMessages(messages, silent);
+                    if (!silent) this.markAsRead(userId);
+                });
+        },
 
-    //     loadMessages: function(userId) {
-    //         fetch(`/chat/messages/${userId}`)
-    //             .then(response => response.json())
-    //             .then(messages => {
-    //                 this.renderMessages(messages);
-    //                 this.markAsRead(userId);
-    //             });
-    //     },
+        renderMessages: function(messages, silent = false) {
+            // Cegah render ulang dan loncatan scroll jika tidak ada pesan baru
+            if (silent && this.currentMessagesCount === messages.length) return;
+            this.currentMessagesCount = messages.length;
 
-    //     renderMessages: function(messages) {
-    //         const container = document.getElementById('messages-container');
-    //         container.innerHTML = '';
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '';
 
-    //         if (messages.length === 0) {
-    //             container.innerHTML = '<div class="flex justify-center items-center h-full"><p class="text-gray-500">Mulai percakapan dengan mengirim pesan</p></div>';
-    //             return;
-    //         }
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="flex justify-center items-center h-full"><p class="text-gray-500">Mulai percakapan dengan mengirim pesan</p></div>';
+                return;
+            }
 
-    //         messages.forEach(message => {
-    //             const messageElement = document.createElement('div');
-    //             messageElement.className = `message ${message.sender_id === this.currentUser ? 'sent' : 'received'}`;
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${message.sender_id == this.currentUser ? 'sent' : 'received'}`;
 
-    //             messageElement.innerHTML = `
-    //                 <div class="message-content">
-    //                     <div class="message-text">${message.body}</div>
-    //                     <div class="message-time">
-    //                         ${new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-    //                     </div>
-    //                 </div>
-    //             `;
+                messageElement.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-text">${message.body}</div>
+                        <div class="message-time">
+                            ${new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                    </div>
+                `;
 
-    //             container.appendChild(messageElement);
-    //         });
+                container.appendChild(messageElement);
+            });
 
-    //         container.scrollTop = container.scrollHeight;
-    //     },
+            container.scrollTop = container.scrollHeight;
+        },
 
-    //     setupEventListeners: function() {
-    //         document.getElementById('message-form').addEventListener('submit', (e) => {
-    //             e.preventDefault();
-    //             this.sendMessage();
-    //         });
+        setupEventListeners: function() {
+            document.getElementById('message-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.sendMessage();
+            });
 
-    //         document.getElementById('search-users').addEventListener('input', (e) => {
-    //             this.searchUsers(e.target.value);
-    //         });
-    //     },
+            document.getElementById('search-users').addEventListener('input', (e) => {
+                this.searchUsers(e.target.value);
+            });
+        },
 
-    //     sendMessage: function() {
-    //         const messageInput = document.getElementById('message-input');
-    //         const message = messageInput.value.trim();
+        sendMessage: function() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
 
-    //         if (!message || !this.currentChat) return;
+            if (!message || !this.currentChat) return;
 
-    //         fetch('{{ route("chat.send") }}', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //             },
-    //             body: JSON.stringify({
-    //                 receiver_id: this.currentChat.id,
-    //                 message: message
-    //             })
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             if (data.success) {
-    //                 messageInput.value = '';
-    //                 // Optimistic UI update can be added here
-    //                 this.loadMessages(this.currentChat.id);
-    //             }
-    //         });
-    //     },
+            fetch('{{ route("chat.send") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    receiver_id: this.currentChat.id,
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value = '';
+                    // Optimistic UI update can be added here
+                    this.loadMessages(this.currentChat.id);
+                }
+            });
+        },
 
-    //     handleNewMessage: function(data) {
-    //         if (this.currentChat && data.message.sender_id === this.currentChat.id) {
-    //             this.loadMessages(this.currentChat.id);
-    //         } else {
-    //             this.updateUnreadCount(data.message.sender_id);
-    //         }
-    //     },
+        // handleNewMessage: dihapus karena menggunakan metode polling
 
-    //     updateUnreadCount: function(userId) {
-    //         const unreadElement = document.getElementById(`unread-${userId}`);
-    //         if (unreadElement) {
-    //             const currentCount = parseInt(unreadElement.textContent) || 0;
-    //             unreadElement.textContent = currentCount + 1;
-    //             unreadElement.style.display = 'flex';
-    //         }
-    //     },
+        updateUnreadCount: function(userId) {
+            const unreadElement = document.getElementById(`unread-${userId}`);
+            if (unreadElement) {
+                const currentCount = parseInt(unreadElement.textContent) || 0;
+                unreadElement.textContent = currentCount + 1;
+                unreadElement.style.display = 'flex';
+            }
+        },
 
-    //     markAsRead: function(userId) {
-    //         fetch(`/chat/mark-read/${userId}`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //             }
-    //         });
+        markAsRead: function(userId) {
+            fetch(`/chat/mark-read/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
 
-    //         const unreadElement = document.getElementById(`unread-${userId}`);
-    //         if (unreadElement) {
-    //             unreadElement.style.display = 'none';
-    //             unreadElement.textContent = '0';
-    //         }
-    //     },
+            const unreadElement = document.getElementById(`unread-${userId}`);
+            if (unreadElement) {
+                unreadElement.style.display = 'none';
+                unreadElement.textContent = '0';
+            }
+        },
 
-    //     searchUsers: function(query) {
-    //         const usersList = document.getElementById('users-list');
-    //         const originalItems = usersList.querySelectorAll('.user-list-item');
+        searchUsers: function(query) {
+            const usersList = document.getElementById('users-list');
+            const originalItems = usersList.querySelectorAll('.user-list-item');
 
-    //         originalItems.forEach(item => {
-    //             const userName = item.querySelector('h6').textContent.toLowerCase();
-    //             if (userName.includes(query.toLowerCase())) {
-    //                 item.style.display = 'flex';
-    //             } else {
-    //                 item.style.display = 'none';
-    //             }
-    //         });
-    //     }
-    // };
+            originalItems.forEach(item => {
+                const userName = item.querySelector('h6').textContent.toLowerCase();
+                if (userName.includes(query.toLowerCase())) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    };
 
-    // ChatApp.init();
+    ChatApp.init();
 });
 </script>
 @endsection
