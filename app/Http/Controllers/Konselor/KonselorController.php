@@ -40,22 +40,21 @@ class KonselorController extends Controller
             'completed_sessions' => $completedSessions,
         ];
 
-        // 2. DATA ASLI UNTUK SESI AKTIF SAAT INI (Menggantikan 'Jadwal Mendatang' karena tabel sesi menggunakan 'ongoing')
-        $upcomingSessions = \App\Models\Session::with('user')
+        // 2. DATA UNTUK SESI PENDING (Menunggu Konfirmasi)
+        $pendingSessions = \App\Models\Session::with('user')
+                                               ->where('konselor_id', $konselorId)
+                                               ->where('status', 'pending')
+                                               ->orderBy('created_at', 'asc')
+                                               ->get();
+
+        // 3. DATA UNTUK SESI AKTIF SAAT INI (Ongoing)
+        $ongoingSessions = \App\Models\Session::with('user')
                                                ->where('konselor_id', $konselorId)
                                                ->where('status', 'ongoing')
                                                ->orderBy('created_at', 'desc')
-                                               ->take(5)
-                                               ->get()
-                                               ->map(function($session) {
-                                                    return (object)[
-                                                        'user' => (object)['name' => $session->user->name ?? 'Klien'],
-                                                        'schedule_time' => $session->created_at, // Menggunakan waktu dibuat sebagai referensi waktu
-                                                        'status' => 'Berjalan'
-                                                    ];
-                                               });
+                                               ->get();
 
-        // 3. DATA ASLI UNTUK AKTIVITAS TERBARU (Diambil dari sesi terakhir diperbarui/ditutup)
+        // 4. DATA ASLI UNTUK AKTIVITAS TERBARU (Diambil dari sesi terakhir diperbarui/ditutup)
         $recentActivities = \App\Models\Session::with('user')
                                                ->where('konselor_id', $konselorId)
                                                ->orderBy('updated_at', 'desc')
@@ -69,8 +68,74 @@ class KonselorController extends Controller
                                                     ];
                                                });
         
-        // 4. Mengirim semua data ke view
-        return view('konselor.index', compact('stats', 'upcomingSessions', 'recentActivities'));
+        // 5. Mengirim semua data ke view
+        return view('konselor.index', compact('stats', 'pendingSessions', 'ongoingSessions', 'recentActivities'));
+    }
+
+    /**
+     * Terima Sesi
+     */
+    public function acceptSession($id)
+    {
+        $session = \App\Models\Session::findOrFail($id);
+        if ($session->konselor_id != Auth::id()) {
+            abort(403);
+        }
+
+        $session->status = 'ongoing';
+        $session->save();
+
+        return redirect()->back()->with('success', 'Sesi berhasil diterima dan dimulai.');
+    }
+
+    /**
+     * Tolak Sesi (Refund Token)
+     */
+    public function rejectSession($id)
+    {
+        $session = \App\Models\Session::findOrFail($id);
+        if ($session->konselor_id != Auth::id()) {
+            abort(403);
+        }
+
+        if ($session->status == 'pending') {
+            $session->status = 'rejected';
+            $session->save();
+
+            // Refund token ke user
+            $sessionPrice = (int) (\App\Models\Setting::where('key', 'session_price')->first()->value ?? 500);
+            $user = $session->user;
+            if ($user) {
+                $user->tokens_balance += $sessionPrice;
+                $user->save();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Sesi ditolak dan token dikembalikan ke klien.');
+    }
+
+    /**
+     * Akhiri Sesi (Berikan Honor)
+     */
+    public function endSession($id)
+    {
+        $session = \App\Models\Session::findOrFail($id);
+        if ($session->konselor_id != Auth::id()) {
+            abort(403);
+        }
+
+        if ($session->status == 'ongoing') {
+            $session->status = 'completed';
+            $session->save();
+
+            // Berikan token ke konselor
+            $sessionPrice = (int) (\App\Models\Setting::where('key', 'session_price')->first()->value ?? 500);
+            $counselor = Auth::user();
+            $counselor->tokens_balance += $sessionPrice;
+            $counselor->save();
+        }
+
+        return redirect()->back()->with('success', 'Sesi diakhiri dan honor token telah ditambahkan ke saldo Anda.');
     }
 
     /**

@@ -58,33 +58,85 @@
         
         <div class="lg:col-span-2 space-y-8">
             
+            <!-- Sesi Pending -->
             <div class="bg-white p-6 rounded-playful-sm border-2 border-dark shadow-border-offset">
-                <h3 class="font-bold text-h4 text-dark mb-4">Jadwal Sesi Mendatang</h3>
+                <h3 class="font-bold text-h4 text-dark mb-4">Permintaan Sesi (Menunggu Konfirmasi)</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead class="border-b-2 border-dark">
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs font-bold text-dark uppercase">Klien</th>
-                                <th class="px-4 py-2 text-left text-xs font-bold text-dark uppercase">Tanggal</th>
-                                <th class="px-4 py-2 text-left text-xs font-bold text-dark uppercase">Waktu</th>
-                                <th class="px-4 py-2 text-right text-xs font-bold text-dark uppercase">Aksi</th>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-dark uppercase">Waktu Diajukan</th>
+                                <th class="px-4 py-2 text-center text-xs font-bold text-dark uppercase">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($upcomingSessions as $session)
+                            @forelse ($pendingSessions as $session)
                                 <tr class="border-b border-gray-200">
                                     <td class="px-4 py-3 font-semibold text-dark">{{ $session->user->name ?? 'N/A' }}</td>
-                                    <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($session->schedule_time)->format('d F Y') }}</td>
-                                    <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($session->schedule_time)->format('H:i') }} WIB</td>
-                                    <td class="px-4 py-3 text-right">
-                                        <a href="#" class="text-primary font-bold hover:underline">Detail</a>
+                                    <td class="px-4 py-3 text-gray-600">
+                                        {{ \Carbon\Carbon::parse($session->scheduled_at ?? $session->created_at)->format('d M Y, H:i') }}
+                                    </td>
+                                    <td class="px-4 py-3 flex justify-center space-x-2">
+                                        <form action="{{ route('konselor.sessions.accept', $session->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded text-sm font-bold shadow-border-offset border border-dark hover:bg-green-600">
+                                                <i class="fas fa-check"></i> Terima
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('konselor.sessions.reject', $session->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menolak sesi ini? Token akan dikembalikan ke pengguna.')">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded text-sm font-bold shadow-border-offset border border-dark hover:bg-red-600">
+                                                <i class="fas fa-times"></i> Tolak
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-8 text-gray-500">
-                                        <i class="fas fa-calendar-times text-3xl mb-2"></i>
-                                        <p>Tidak ada jadwal sesi mendatang.</p>
+                                    <td colspan="3" class="text-center py-6 text-gray-500">
+                                        <p>Tidak ada permintaan sesi saat ini.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sesi Aktif -->
+            <div class="bg-white p-6 rounded-playful-sm border-2 border-dark shadow-border-offset">
+                <h3 class="font-bold text-h4 text-dark mb-4">Sesi Sedang Berjalan</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="border-b-2 border-dark">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-dark uppercase">Klien</th>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-dark uppercase">Mulai</th>
+                                <th class="px-4 py-2 text-center text-xs font-bold text-dark uppercase">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($ongoingSessions as $session)
+                                <tr class="border-b border-gray-200">
+                                    <td class="px-4 py-3 font-semibold text-dark">{{ $session->user->name ?? 'N/A' }}</td>
+                                    <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($session->updated_at)->diffForHumans() }}</td>
+                                    <td class="px-4 py-3 flex justify-center space-x-2">
+                                        <a href="{{ route('chat') }}" class="px-3 py-1 bg-primary text-white rounded text-sm font-bold shadow-border-offset border border-dark hover:bg-opacity-90">
+                                            <i class="fas fa-comment"></i> Chat
+                                        </a>
+                                        <form action="{{ route('konselor.sessions.end', $session->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin mengakhiri sesi ini? Honor akan ditambahkan ke saldo Anda.')">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm font-bold shadow-border-offset border border-dark hover:bg-yellow-600">
+                                                <i class="fas fa-stop"></i> Akhiri
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center py-6 text-gray-500">
+                                        <p>Tidak ada sesi yang sedang berjalan.</p>
                                     </td>
                                 </tr>
                             @endforelse

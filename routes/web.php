@@ -247,6 +247,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,super_ad
 // // Konselor Routes
 Route::prefix('konselor')->name('konselor.')->middleware(['auth', 'role:konselor'])->group(function () {
     Route::get('/dashboard', [KonselorController::class, 'dashboard'])->name('dashboard');
+    
+    // Session Management
+    Route::post('/sessions/{id}/accept', [KonselorController::class, 'acceptSession'])->name('sessions.accept');
+    Route::post('/sessions/{id}/reject', [KonselorController::class, 'rejectSession'])->name('sessions.reject');
+    Route::post('/sessions/{id}/end', [KonselorController::class, 'endSession'])->name('sessions.end');
 
     // Audio Management
     Route::get('/audios', [KonselorController::class, 'audios'])->name('audios');

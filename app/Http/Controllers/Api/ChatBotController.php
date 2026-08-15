@@ -13,13 +13,13 @@ class ChatBotController extends Controller
         $userMessage = $request->input('message');
         $conversationHistory = $request->input('history', []); // array berisi ['role' => 'user'/'assistant', 'content' => '...']
 
-        if (!$userMessage) {
+        if (! $userMessage) {
             return response()->json(['error' => 'No message provided.'], 400);
         }
 
         try {
             $apiKey = config('services.gemini.key') ?? env('GEMINI_API_KEY');
-            if (!$apiKey) {
+            if (! $apiKey) {
                 return response()->json(['error' => 'API Key Gemini belum dikonfigurasi di environment server.'], 500);
             }
             $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=$apiKey";
@@ -38,7 +38,7 @@ class ChatBotController extends Controller
 
             // Ubah riwayat percakapan menjadi format teks
             $historyText = collect($conversationHistory)
-                ->map(fn($msg) => ($msg['role'] === 'user' ? 'Klien' : 'Nemo') . ': ' . $msg['content'])
+                ->map(fn ($msg) => ($msg['role'] === 'user' ? 'Klien' : 'Nemo').': '.$msg['content'])
                 ->join("\n");
 
             // Prompt utama (persona + waktu + instruksi)
@@ -98,7 +98,7 @@ PROMPT;
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan: '.$e->getMessage(),
             ], 500);
         }
     }
