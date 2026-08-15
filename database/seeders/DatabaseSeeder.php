@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             BlogCategorySeeder::class,
             TaskTemplateSeeder::class,
             ExerciseSeeder::class,
+            DummyDataSeeder::class,
+            ExtraDummySeeder::class,
         ]);
 
     }
