@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\CounselorController;
 use App\Http\Controllers\Api\ProposalController as ApiProposalController;
 use App\Http\Controllers\Api\TransactionController as ApiTransactionController;
 use App\Http\Controllers\Api\DailyTaskController;
+use App\Http\Controllers\Api\CharacterController;
 
 
 
@@ -62,12 +63,26 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('journal')->group(function () {
         Route::get('/', [JournalController::class, 'index']);
         Route::post('/', [JournalController::class, 'store']);
-        Route::put('/{id}', [JournalController::class, 'update']); // PUT method
+        Route::post('/voice', [JournalController::class, 'storeVoice']);
+        Route::get('/cards', [JournalController::class, 'cards']);
+        Route::get('/insights', [JournalController::class, 'insights']);
+        Route::put('/{id}', [JournalController::class, 'update']);
         Route::patch('/{id}', [JournalController::class, 'update']);
         Route::get('/search', [JournalController::class, 'search']);
         Route::get('/stats', [JournalController::class, 'stats']);
         Route::get('/{id}', [JournalController::class, 'show']);
         Route::delete('/{id}', [JournalController::class, 'destroy']);
+    });
+
+    Route::prefix('characters')->group(function () {
+        Route::get('/', [CharacterController::class, 'index']);
+        Route::post('/', [CharacterController::class, 'store']);
+        Route::get('/{id}', [CharacterController::class, 'show']);
+        Route::put('/{id}', [CharacterController::class, 'update']);
+        Route::delete('/{id}', [CharacterController::class, 'destroy']);
+        Route::post('/{id}/chat', [CharacterController::class, 'chat']);
+        Route::post('/{id}/respond/{journalId}', [CharacterController::class, 'respondToJournal']);
+        Route::get('/{id}/conversations', [CharacterController::class, 'conversations']);
     });
     Route::prefix('moods')->group(function () {
         Route::get('/', [MoodController::class, 'index']);

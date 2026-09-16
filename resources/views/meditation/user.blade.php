@@ -64,7 +64,7 @@
                 <h4 class="text-h5 text-dark font-bold mb-2">Latihan Singkat</h4>
                 <p class="text-gray-600 text-sm mb-4">Latihan singkat untuk menenangkan pikiran.</p>
                 </div>
-                <a href="{{ route('user.exercise'); }}" class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center block">
+                <a href="{{ route('user.exercise') }}" class="hover-1 w-full px-4 py-3 bg-white text-dark font-bold rounded-playful-sm border-2 border-dark shadow-border-offset-accent text-center block">
                     <i class="fas fa-wind mr-2"></i> Latihan
                 </a>
             </div>
